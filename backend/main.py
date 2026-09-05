@@ -18,12 +18,36 @@ app = FastAPI(title="SmartCare AI")
 # =========================================================
 # CORS
 # =========================================================
+# Allows the public GitHub Pages frontend to communicate
+# with the Render-hosted FastAPI backend.
+#
+# GitHub Pages:
+# https://rananganpal.github.io/SmartCare-AI/
+#
+# IMPORTANT:
+# The origin is only https://rananganpal.github.io
+# Do NOT add /SmartCare-AI here.
+# =========================================================
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+
+    allow_origins=[
+        "https://rananganpal.github.io",
+
+        # Local VS Code / Live Server
+        "http://localhost:5500",
+        "http://127.0.0.1:5500",
+
+        # Local FastAPI testing
+        "http://localhost:8000",
+        "http://127.0.0.1:8000"
+    ],
+
+    allow_credentials=False,
+
     allow_methods=["*"],
+
     allow_headers=["*"],
 )
 
@@ -33,7 +57,11 @@ app.add_middleware(
 # =========================================================
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(BASE_DIR, "smartcare.db")
+
+DB_PATH = os.path.join(
+    BASE_DIR,
+    "smartcare.db"
+)
 
 
 # =========================================================
@@ -136,7 +164,9 @@ DEPARTMENT_SCHEDULE = {
 
 def get_db():
 
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(
+        DB_PATH
+    )
 
     conn.row_factory = sqlite3.Row
 
@@ -147,7 +177,11 @@ def get_db():
 # DATABASE MIGRATION HELPERS
 # =========================================================
 
-def column_exists(conn, table_name, column_name):
+def column_exists(
+    conn,
+    table_name,
+    column_name
+):
 
     cursor = conn.execute(
         f"PRAGMA table_info({table_name})"
@@ -189,6 +223,7 @@ def add_column_if_missing(
 def init_db():
 
     conn = get_db()
+
 
     # -----------------------------------------------------
     # USERS
@@ -280,6 +315,27 @@ def init_db():
     add_column_if_missing(
         conn,
         "appointments",
+        "appointment_date",
+        "TEXT"
+    )
+
+    add_column_if_missing(
+        conn,
+        "appointments",
+        "time",
+        "TEXT"
+    )
+
+    add_column_if_missing(
+        conn,
+        "appointments",
+        "token",
+        "TEXT"
+    )
+
+    add_column_if_missing(
+        conn,
+        "appointments",
         "planned_time",
         "TEXT"
     )
@@ -310,6 +366,13 @@ def init_db():
         "appointments",
         "delay_minutes",
         "INTEGER DEFAULT 0"
+    )
+
+    add_column_if_missing(
+        conn,
+        "appointments",
+        "status",
+        "TEXT DEFAULT 'waiting'"
     )
 
 
@@ -473,7 +536,9 @@ def convert_time_to_datetime(
 
 def format_time(dt):
 
-    return dt.strftime("%I:%M %p")
+    return dt.strftime(
+        "%I:%M %p"
+    )
 
 
 def format_datetime(dt):
@@ -560,7 +625,9 @@ def departments():
 # =========================================================
 
 @app.post("/register")
-def register(data: RegisterRequest):
+def register(
+    data: RegisterRequest
+):
 
     conn = get_db()
 
@@ -672,13 +739,17 @@ def register(data: RegisterRequest):
 
             "id": user_id,
 
-            "name": data.name,
+            "name":
+                data.name,
 
-            "email": data.email,
+            "email":
+                data.email,
 
-            "role": role,
+            "role":
+                role,
 
-            "department": department
+            "department":
+                department
 
         }
 
@@ -690,7 +761,9 @@ def register(data: RegisterRequest):
 # =========================================================
 
 @app.post("/login")
-def login(data: LoginRequest):
+def login(
+    data: LoginRequest
+):
 
     conn = get_db()
 
@@ -732,15 +805,20 @@ def login(data: LoginRequest):
 
         "user": {
 
-            "id": user["id"],
+            "id":
+                user["id"],
 
-            "name": user["name"],
+            "name":
+                user["name"],
 
-            "email": user["email"],
+            "email":
+                user["email"],
 
-            "role": user["role"],
+            "role":
+                user["role"],
 
-            "department": user["department"]
+            "department":
+                user["department"]
 
         }
 
@@ -853,7 +931,8 @@ def recommendation(
 
         "available": True,
 
-        "department": department,
+        "department":
+            department,
 
         "doctor":
             DEPARTMENT_SCHEDULE[
@@ -1023,6 +1102,7 @@ def create_appointment(
 
     # Find the largest existing token number.
     # This prevents duplicate tokens after cancellation.
+
     max_token_number = 0
 
 
@@ -1185,7 +1265,8 @@ def create_appointment(
 
         "appointment": {
 
-            "id": appointment_id,
+            "id":
+                appointment_id,
 
             "patient_id":
                 data.patient_id,
@@ -1341,9 +1422,6 @@ def calculate_queue_times(
 
             # ---------------------------------------------
             # ACTUAL END
-            #
-            # Example:
-            # 09:10 + 25 min = 09:35
             # ---------------------------------------------
 
             actual_end = (
@@ -1406,8 +1484,6 @@ def calculate_queue_times(
 
 
             # ---------------------------------------------
-            # VERY IMPORTANT
-            #
             # NEXT PATIENT STARTS AFTER THIS END TIME
             # ---------------------------------------------
 
@@ -1501,7 +1577,6 @@ def calculate_queue_times(
             #
             # 1. Original planned time
             # 2. Previous patient actual finish time
-            #
             # ---------------------------------------------
 
             expected_start = max(
@@ -1784,6 +1859,7 @@ def get_calculated_queue(
         # is mainly useful for waiting patients.
 
         item["estimated_wait_minutes"] = (
+
             max(
                 0,
                 int(
@@ -1795,7 +1871,9 @@ def get_calculated_queue(
                     / 60
                 )
             )
+
             if status == "waiting"
+
             else 0
         )
 
@@ -1865,13 +1943,13 @@ def patient_dashboard(
 
     if today_appointments:
 
-        # Get first active appointment
         current_appointment = (
             today_appointments[0]
         )
 
 
         # Calculate queue information
+
         queue_data = get_calculated_queue(
             current_appointment[
                 "department"
@@ -1927,6 +2005,7 @@ def queue(
 
 
     # If date isn't provided, use today
+
     if not appointment_date:
 
         appointment_date = (
@@ -1960,7 +2039,9 @@ def queue(
     """
 
 
-    params.append(appointment_date)
+    params.append(
+        appointment_date
+    )
 
 
     rows = conn.execute(
@@ -2097,11 +2178,14 @@ def doctor_dashboard(
 
     return {
 
-        "waiting": waiting,
+        "waiting":
+            waiting,
 
-        "completed": completed,
+        "completed":
+            completed,
 
-        "in_progress": in_progress,
+        "in_progress":
+            in_progress,
 
         "total":
             len(appointments),
@@ -2173,6 +2257,7 @@ def update_queue(
     if data.status == "in_progress":
 
         # Check if another patient is already in progress
+
         active = conn.execute(
             """
             SELECT id
@@ -2201,9 +2286,7 @@ def update_queue(
             )
 
 
-        # ---------------------------------------------
         # Actual start = now
-        # ---------------------------------------------
 
         now = datetime.now()
 
@@ -2236,16 +2319,6 @@ def update_queue(
 
     elif data.status == "completed":
 
-        # ---------------------------------------------
-        # Doctor enters actual consultation duration.
-        #
-        # Example:
-        # 10
-        # 20
-        # 25
-        # 30
-        # ---------------------------------------------
-
         consultation = (
             data.consultation_minutes
         )
@@ -2261,9 +2334,7 @@ def update_queue(
             )
 
 
-        # ---------------------------------------------
         # Get actual start
-        # ---------------------------------------------
 
         actual_start_value = (
             appointment[
@@ -2281,14 +2352,10 @@ def update_queue(
 
         else:
 
-            # If doctor directly completes
-            # without starting first.
             actual_start = datetime.now()
 
 
-        # ---------------------------------------------
-        # ACTUAL END
-        # ---------------------------------------------
+        # Actual end
 
         actual_end = (
             actual_start
@@ -2299,9 +2366,7 @@ def update_queue(
         )
 
 
-        # ---------------------------------------------
-        # PLANNED TIME
-        # ---------------------------------------------
+        # Planned time
 
         planned_datetime = parse_planned_time(
             appointment[
@@ -2313,9 +2378,7 @@ def update_queue(
         )
 
 
-        # ---------------------------------------------
-        # DELAY
-        # ---------------------------------------------
+        # Delay
 
         delay = max(
             0,
@@ -2330,9 +2393,7 @@ def update_queue(
         )
 
 
-        # ---------------------------------------------
-        # SAVE COMPLETED DATA
-        # ---------------------------------------------
+        # Save completed data
 
         conn.execute(
             """
@@ -2549,6 +2610,189 @@ def admin_analytics():
         ]
 
     }
+
+
+# =========================================================
+# ADMIN PATIENT LIST
+# =========================================================
+
+@app.get("/admin/patients")
+def admin_patients():
+
+    conn = get_db()
+
+
+    patients = conn.execute(
+        """
+        SELECT
+            id,
+            name,
+            email,
+            department
+        FROM users
+        WHERE role = 'patient'
+        ORDER BY id DESC
+        """
+    ).fetchall()
+
+
+    conn.close()
+
+
+    return [
+        dict(row)
+        for row in patients
+    ]
+
+
+# =========================================================
+# ADMIN DELETE PATIENT MODEL
+# =========================================================
+
+class AdminDeletePatientRequest(BaseModel):
+
+    admin_id: int
+
+
+# =========================================================
+# ADMIN DELETE PATIENT
+# =========================================================
+
+@app.delete("/admin/patients/{patient_id}")
+def delete_patient(
+    patient_id: int,
+    data: AdminDeletePatientRequest
+):
+
+    conn = get_db()
+
+
+    try:
+
+        # -------------------------------------------------
+        # VERIFY ADMIN
+        # -------------------------------------------------
+
+        admin = conn.execute(
+            """
+            SELECT id
+            FROM users
+            WHERE id = ?
+            AND role = 'admin'
+            """,
+            (data.admin_id,)
+        ).fetchone()
+
+
+        if not admin:
+
+            raise HTTPException(
+                status_code=403,
+                detail="Only an admin can delete a patient."
+            )
+
+
+        # -------------------------------------------------
+        # VERIFY PATIENT
+        # -------------------------------------------------
+
+        patient = conn.execute(
+            """
+            SELECT id, name
+            FROM users
+            WHERE id = ?
+            AND role = 'patient'
+            """,
+            (patient_id,)
+        ).fetchone()
+
+
+        if not patient:
+
+            raise HTTPException(
+                status_code=404,
+                detail="Patient account not found."
+            )
+
+
+        # -------------------------------------------------
+        # DELETE APPOINTMENTS FIRST
+        # -------------------------------------------------
+
+        appointment_count = conn.execute(
+            """
+            SELECT COUNT(*)
+            FROM appointments
+            WHERE patient_id = ?
+            """,
+            (patient_id,)
+        ).fetchone()[0]
+
+
+        conn.execute(
+            """
+            DELETE FROM appointments
+            WHERE patient_id = ?
+            """,
+            (patient_id,)
+        )
+
+
+        # -------------------------------------------------
+        # DELETE PATIENT ACCOUNT
+        # -------------------------------------------------
+
+        conn.execute(
+            """
+            DELETE FROM users
+            WHERE id = ?
+            AND role = 'patient'
+            """,
+            (patient_id,)
+        )
+
+
+        conn.commit()
+
+
+        return {
+
+            "message":
+                "Patient account deleted successfully.",
+
+            "patient_id":
+                patient_id,
+
+            "patient_name":
+                patient["name"],
+
+            "deleted_appointments":
+                appointment_count
+
+        }
+
+
+    except HTTPException:
+
+        conn.rollback()
+
+        raise
+
+
+    except Exception as error:
+
+        conn.rollback()
+
+        raise HTTPException(
+            status_code=500,
+            detail=
+            f"Unable to delete patient: {str(error)}"
+        )
+
+
+    finally:
+
+        conn.close()
 
 
 # =========================================================
