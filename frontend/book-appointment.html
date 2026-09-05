@@ -1,0 +1,2375 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Book Appointment - SmartCare AI</title>
+
+
+    <style>
+
+        /* ================================
+           BASIC RESET
+        ================================= */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            font-family: Arial, Helvetica, sans-serif;
+
+            min-height: 100vh;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #eaf7ff,
+                    #f8fcff,
+                    #e8f8f5
+                );
+
+            color: #173f60;
+        }
+
+
+        /* ================================
+           NAVBAR
+        ================================= */
+
+        nav {
+
+            height: 70px;
+
+            background: white;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 0 7%;
+
+            box-shadow:
+                0 3px 18px
+                rgba(20, 70, 100, 0.08);
+        }
+
+
+        .logo {
+
+            font-size: 24px;
+
+            font-weight: 800;
+
+            color: #1261a0;
+        }
+
+
+        .logo span {
+
+            color: #19a7a8;
+        }
+
+
+        .nav-right {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 20px;
+        }
+
+
+        .logout-btn {
+
+            border: none;
+
+            background: #1261a0;
+
+            color: white;
+
+            padding: 9px 17px;
+
+            border-radius: 7px;
+
+            cursor: pointer;
+
+            font-weight: 700;
+        }
+
+
+        .logout-btn:hover {
+
+            background: #0c4f85;
+        }
+
+
+        /* ================================
+           PAGE
+        ================================= */
+
+        .page {
+
+            max-width: 1150px;
+
+            margin: auto;
+
+            padding: 55px 20px;
+        }
+
+
+        .page-header {
+
+            margin-bottom: 30px;
+        }
+
+
+        .page-header h1 {
+
+            font-size: 38px;
+
+            color: #123f68;
+
+            margin-bottom: 7px;
+        }
+
+
+        .page-header p {
+
+            color: #718798;
+
+            font-size: 16px;
+        }
+
+
+        /* ================================
+           MAIN GRID
+        ================================= */
+
+        .booking-layout {
+
+            display: grid;
+
+            grid-template-columns:
+                1fr 0.75fr;
+
+            gap: 25px;
+
+            align-items: start;
+        }
+
+
+        /* ================================
+           CARD
+        ================================= */
+
+        .card {
+
+            background: white;
+
+            border: 1px solid #dcecf7;
+
+            border-radius: 18px;
+
+            padding: 30px;
+
+            box-shadow:
+                0 15px 45px
+                rgba(20, 70, 100, 0.09);
+        }
+
+
+        .card h2 {
+
+            color: #173f60;
+
+            font-size: 22px;
+
+            margin-bottom: 22px;
+        }
+
+
+        /* ================================
+           FORM
+        ================================= */
+
+        .form-group {
+
+            margin-bottom: 18px;
+        }
+
+
+        .form-group label {
+
+            display: block;
+
+            color: #34566f;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            margin-bottom: 7px;
+        }
+
+
+        input,
+        select {
+
+            width: 100%;
+
+            height: 47px;
+
+            border: 1px solid #cbddea;
+
+            border-radius: 9px;
+
+            padding: 0 13px;
+
+            background: #f9fcff;
+
+            color: #183b57;
+
+            font-size: 14px;
+
+            outline: none;
+        }
+
+
+        input:focus,
+        select:focus {
+
+            border-color: #1261a0;
+
+            background: white;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(18, 97, 160, 0.10);
+        }
+
+
+        input[readonly] {
+
+            background: #f1f7fb;
+
+            color: #527086;
+        }
+
+
+        /* ================================
+           AI RECOMMENDATION
+        ================================= */
+
+        .ai-box {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #edf9f7,
+                    #eef8ff
+                );
+
+            border: 1px solid #cdebe7;
+
+            border-radius: 13px;
+
+            padding: 18px;
+
+            margin-top: 20px;
+        }
+
+
+        .ai-title {
+
+            font-size: 16px;
+
+            font-weight: 800;
+
+            color: #16735d;
+
+            margin-bottom: 5px;
+        }
+
+
+        .ai-box p {
+
+            font-size: 13px;
+
+            color: #607b87;
+
+            margin-bottom: 12px;
+        }
+
+
+        /* ================================
+           TIME OPTIONS
+        ================================= */
+
+        .time-options {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 10px;
+        }
+
+
+        .time-btn {
+
+            border: 1px solid #cbddea;
+
+            background: white;
+
+            padding: 11px;
+
+            border-radius: 8px;
+
+            cursor: pointer;
+
+            color: #34566f;
+
+            font-weight: 600;
+
+            transition: 0.2s;
+        }
+
+
+        .time-btn:hover {
+
+            border-color: #1261a0;
+
+            background: #eef8ff;
+        }
+
+
+        .time-btn.selected {
+
+            background: #1261a0;
+
+            color: white;
+
+            border-color: #1261a0;
+        }
+
+
+        /* ================================
+           BOOK BUTTON
+        ================================= */
+
+        .book-btn {
+
+            width: 100%;
+
+            height: 50px;
+
+            border: none;
+
+            border-radius: 9px;
+
+            background: #1261a0;
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            margin-top: 10px;
+
+            transition: 0.2s;
+        }
+
+
+        .book-btn:hover {
+
+            background: #0c4f85;
+
+            transform: translateY(-1px);
+        }
+
+
+        .book-btn:disabled {
+
+            background: #aebfc9;
+
+            cursor: not-allowed;
+
+            transform: none;
+        }
+
+
+        /* ================================
+           INFORMATION CARD
+        ================================= */
+
+        .info-card {
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #1261a0,
+                    #128889
+                );
+
+            color: white;
+
+            border-radius: 18px;
+
+            padding: 30px;
+
+            box-shadow:
+                0 15px 45px
+                rgba(20, 70, 100, 0.12);
+        }
+
+
+        .info-card h2 {
+
+            font-size: 23px;
+
+            margin-bottom: 20px;
+        }
+
+
+        .info-item {
+
+            display: flex;
+
+            gap: 13px;
+
+            padding: 16px 0;
+
+            border-bottom:
+                1px solid
+                rgba(255,255,255,0.2);
+        }
+
+
+        .info-item:last-child {
+
+            border-bottom: none;
+        }
+
+
+        .info-icon {
+
+            font-size: 22px;
+
+            width: 35px;
+        }
+
+
+        .info-item h3 {
+
+            font-size: 15px;
+
+            margin-bottom: 3px;
+        }
+
+
+        .info-item p {
+
+            font-size: 13px;
+
+            opacity: 0.85;
+
+            line-height: 1.5;
+        }
+
+
+        /* ================================
+           MESSAGE
+        ================================= */
+
+        #message {
+
+            min-height: 25px;
+
+            text-align: center;
+
+            margin: 12px 0;
+
+            font-size: 14px;
+
+            font-weight: 700;
+        }
+
+
+        .success {
+
+            color: #16804f;
+        }
+
+
+        .error {
+
+            color: #c0392b;
+        }
+
+
+        /* ================================
+           CONFIRMATION
+        ================================= */
+
+        .confirmation {
+
+            display: none;
+
+            margin-top: 25px;
+
+            background: #edf9f4;
+
+            border: 1px solid #c9eadc;
+
+            border-radius: 14px;
+
+            padding: 22px;
+        }
+
+
+        .confirmation h3 {
+
+            color: #16735d;
+
+            margin-bottom: 12px;
+        }
+
+
+        .confirmation p {
+
+            color: #52756a;
+
+            font-size: 14px;
+
+            margin: 6px 0;
+        }
+
+
+        .token {
+
+            display: inline-block;
+
+            margin: 10px 0;
+
+            background: #1261a0;
+
+            color: white;
+
+            padding: 9px 18px;
+
+            border-radius: 8px;
+
+            font-size: 20px;
+
+            font-weight: 800;
+        }
+
+
+        /* ================================
+           TOKEN TRACKING
+        ================================= */
+
+        .token-tracking {
+
+            display: none;
+
+            margin-top: 25px;
+
+            background: #eef8ff;
+
+            border: 1px solid #cce5f5;
+
+            border-radius: 14px;
+
+            padding: 22px;
+        }
+
+
+        .token-tracking h3 {
+
+            color: #1261a0;
+
+            margin-bottom: 18px;
+
+            font-size: 20px;
+        }
+
+
+        .tracking-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 12px;
+        }
+
+
+        .tracking-box {
+
+            background: white;
+
+            border-radius: 10px;
+
+            padding: 15px;
+
+            border: 1px solid #dcecf7;
+        }
+
+
+        .tracking-box span {
+
+            display: block;
+
+            font-size: 12px;
+
+            color: #718798;
+
+            margin-bottom: 6px;
+        }
+
+
+        .tracking-box strong {
+
+            display: block;
+
+            font-size: 20px;
+
+            color: #1261a0;
+        }
+
+
+        .tracking-status {
+
+            margin-top: 15px;
+
+            text-align: center;
+
+            color: #607b87;
+
+            font-size: 13px;
+        }
+
+
+        /* ================================
+           CANCELLED MESSAGE
+        ================================= */
+
+        .cancelled-box {
+
+            display: none;
+
+            margin-top: 25px;
+
+            background: #fff4f2;
+
+            border: 1px solid #f0c8c2;
+
+            border-radius: 14px;
+
+            padding: 20px;
+
+            text-align: center;
+        }
+
+
+        .cancelled-box h3 {
+
+            color: #c0392b;
+
+            margin-bottom: 8px;
+        }
+
+
+        .cancelled-box p {
+
+            color: #7d625e;
+
+            font-size: 14px;
+        }
+
+
+        /* ================================
+           MOBILE
+        ================================= */
+
+        @media (max-width: 850px) {
+
+            .booking-layout {
+
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+
+        @media (max-width: 600px) {
+
+            nav {
+
+                padding: 0 20px;
+            }
+
+
+            .logo {
+
+                font-size: 20px;
+            }
+
+
+            .page {
+
+                padding: 35px 15px;
+            }
+
+
+            .page-header h1 {
+
+                font-size: 30px;
+            }
+
+
+            .card,
+            .info-card {
+
+                padding: 22px;
+            }
+
+
+            .tracking-grid {
+
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- ================================
+         NAVBAR
+    ================================= -->
+
+    <nav>
+
+        <div class="logo">
+
+            🏥 SmartCare <span>AI</span>
+
+        </div>
+
+
+        <div class="nav-right">
+
+            <button
+                class="logout-btn"
+                onclick="logout()"
+            >
+                Logout
+            </button>
+
+        </div>
+
+    </nav>
+
+
+    <!-- ================================
+         PAGE
+    ================================= -->
+
+    <main class="page">
+
+
+        <div class="page-header">
+
+            <h1>
+                Book an Appointment
+            </h1>
+
+            <p>
+                Choose your department, doctor and preferred appointment time.
+            </p>
+
+        </div>
+
+
+        <div class="booking-layout">
+
+
+            <!-- ============================
+                 BOOKING FORM
+            ============================= -->
+
+            <div class="card">
+
+                <h2>
+                    📅 Appointment Details
+                </h2>
+
+
+                <form id="appointmentForm">
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Patient Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="patientName"
+                            readonly
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="department">
+                            Department
+                        </label>
+
+                        <select
+                            id="department"
+                            required
+                        >
+
+                            <option value="">
+                                Select Department
+                            </option>
+
+                            <option value="Cardiology">
+                                Cardiology
+                            </option>
+
+                            <option value="Orthopedics">
+                                Orthopedics
+                            </option>
+
+                            <option value="Dermatology">
+                                Dermatology
+                            </option>
+
+                            <option value="Neurology">
+                                Neurology
+                            </option>
+
+                            <option value="Ophthalmology">
+                                Ophthalmology
+                            </option>
+
+                            <option value="ENT">
+                                ENT
+                            </option>
+
+                            <option value="General Medicine">
+                                General Medicine
+                            </option>
+
+                            <option value="Pediatrics">
+                                Pediatrics
+                            </option>
+
+                            <option value="Gynecology">
+                                Gynecology
+                            </option>
+
+                            <option value="Dental">
+                                Dental
+                            </option>
+
+                            <option value="Pulmonology">
+                                Pulmonology
+                            </option>
+
+                            <option value="Oncology">
+                                Oncology
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="doctor">
+                            Doctor
+                        </label>
+
+                        <input
+                            type="text"
+                            id="doctor"
+                            placeholder="Doctor will appear here"
+                            readonly
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="date">
+                            Appointment Date
+                        </label>
+
+                        <input
+                            type="date"
+                            id="date"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="ai-box">
+
+                        <div class="ai-title">
+                            🤖 AI Slot Recommendation
+                        </div>
+
+                        <p>
+                            SmartCare AI analyzes queue length,
+                            workload and expected waiting time.
+                        </p>
+
+
+                        <div id="recommendation">
+
+                            Select a department and date
+                            to see recommended slots.
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="form-group"
+                        style="margin-top:20px;"
+                    >
+
+                        <label>
+                            Selected Time
+                        </label>
+
+                        <input
+                            type="text"
+                            id="selectedTime"
+                            placeholder="Select a recommended slot"
+                            readonly
+                            required
+                        >
+
+                    </div>
+
+
+                    <div id="message"></div>
+
+
+                    <button
+                        type="submit"
+                        class="book-btn"
+                        id="bookButton"
+                    >
+                        Book Appointment
+                    </button>
+
+
+                </form>
+
+
+                <div
+                    class="confirmation"
+                    id="confirmation"
+                >
+
+                    <h3>
+                        ✅ Appointment Booked Successfully
+                    </h3>
+
+                    <div
+                        class="token"
+                        id="token"
+                    >
+                    </div>
+
+                    <p id="confirmationText">
+                    </p>
+
+                </div>
+
+
+                <div
+                    class="token-tracking"
+                    id="tokenTracking"
+                >
+
+                    <h3>
+                        🎫 Track My Token
+                    </h3>
+
+
+                    <div class="tracking-grid">
+
+
+                        <div class="tracking-box">
+
+                            <span>
+                                My Token
+                            </span>
+
+                            <strong id="liveToken">
+                                --
+                            </strong>
+
+                        </div>
+
+
+                        <div class="tracking-box">
+
+                            <span>
+                                Patients Ahead
+                            </span>
+
+                            <strong id="patientsAhead">
+                                --
+                            </strong>
+
+                        </div>
+
+
+                        <div class="tracking-box">
+
+                            <span>
+                                Estimated Wait
+                            </span>
+
+                            <strong id="estimatedWait">
+                                -- min
+                            </strong>
+
+                        </div>
+
+
+                        <div class="tracking-box">
+
+                            <span>
+                                Status
+                            </span>
+
+                            <strong id="liveStatus">
+                                --
+                            </strong>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="tracking-status">
+
+                        🔄 Queue information automatically
+                        refreshes every 10 seconds.
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="cancelled-box"
+                    id="cancelledBox"
+                >
+
+                    <h3>
+                        ❌ Appointment Cancelled
+                    </h3>
+
+                    <p>
+                        This appointment has been cancelled.
+                        Token tracking is no longer available.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- ============================
+                 INFORMATION
+            ============================= -->
+
+            <div class="info-card">
+
+                <h2>
+                    🏥 SmartCare Appointment
+                </h2>
+
+
+                <div class="info-item">
+
+                    <div class="info-icon">
+                        🤖
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            AI-Powered Scheduling
+                        </h3>
+
+                        <p>
+                            Get appointment slots based on
+                            predicted hospital workload and
+                            waiting time.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <div class="info-icon">
+                        🎟️
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Digital Token
+                        </h3>
+
+                        <p>
+                            Receive a digital token after
+                            successfully booking your appointment.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <div class="info-icon">
+                        ⏱️
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Waiting-Time Prediction
+                        </h3>
+
+                        <p>
+                            SmartCare estimates the expected
+                            waiting time for your selected slot.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <div class="info-icon">
+                        📊
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Live Queue Tracking
+                        </h3>
+
+                        <p>
+                            Track your token and current
+                            queue position while your
+                            appointment is active.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+    </main>
+
+
+    <script>
+
+
+const API =
+    "http://127.0.0.1:8000";
+
+
+// =====================================================
+// SESSION CHECK
+// =====================================================
+
+let userData =
+    sessionStorage.getItem("user");
+
+
+/*
+    If the old login system has already stored
+    the user in localStorage, move it to sessionStorage.
+
+    This is only for compatibility with your
+    existing login page.
+*/
+
+if (!userData) {
+
+    const oldUser =
+        localStorage.getItem("user");
+
+
+    if (oldUser) {
+
+        sessionStorage.setItem(
+            "user",
+            oldUser
+        );
+
+
+        localStorage.removeItem(
+            "user"
+        );
+
+
+        userData =
+            oldUser;
+
+    }
+
+}
+
+
+if (!userData) {
+
+    window.location.href =
+        "login.html";
+
+}
+
+
+const user =
+    JSON.parse(userData);
+
+
+if (user.role !== "patient") {
+
+    sessionStorage.removeItem(
+        "user"
+    );
+
+
+    localStorage.removeItem(
+        "user"
+    );
+
+
+    alert(
+        "Only patients can book appointments."
+    );
+
+
+    window.location.href =
+        "index.html";
+
+}
+
+
+// =====================================================
+// PATIENT NAME
+// =====================================================
+
+const patientName =
+    document.getElementById(
+        "patientName"
+    );
+
+
+patientName.value =
+    user.name || "";
+
+
+// =====================================================
+// ELEMENTS
+// =====================================================
+
+const department =
+    document.getElementById(
+        "department"
+    );
+
+
+const doctor =
+    document.getElementById(
+        "doctor"
+    );
+
+
+const date =
+    document.getElementById(
+        "date"
+    );
+
+
+const recommendation =
+    document.getElementById(
+        "recommendation"
+    );
+
+
+const selectedTime =
+    document.getElementById(
+        "selectedTime"
+    );
+
+
+const appointmentForm =
+    document.getElementById(
+        "appointmentForm"
+    );
+
+
+const message =
+    document.getElementById(
+        "message"
+    );
+
+
+const bookButton =
+    document.getElementById(
+        "bookButton"
+    );
+
+
+const tokenTracking =
+    document.getElementById(
+        "tokenTracking"
+    );
+
+
+const cancelledBox =
+    document.getElementById(
+        "cancelledBox"
+    );
+
+
+// =====================================================
+// DOCTOR MAPPING
+// =====================================================
+
+const doctors = {
+
+    "Cardiology":
+        "Dr. Sharma",
+
+    "Orthopedics":
+        "Dr. Das",
+
+    "Dermatology":
+        "Dr. Roy",
+
+    "Neurology":
+        "Dr. Mehta",
+
+    "Ophthalmology":
+        "Dr. Priya",
+
+    "ENT":
+        "Dr. Verma",
+
+    "General Medicine":
+        "Dr. Singh",
+
+    "Pediatrics":
+        "Dr. Ananya",
+
+    "Gynecology":
+        "Dr. Neha",
+
+    "Dental":
+        "Dr. Kapoor",
+
+    "Pulmonology":
+        "Dr. Arjun",
+
+    "Oncology":
+        "Dr. Iyer"
+
+};
+
+
+// =====================================================
+// MINIMUM DATE
+// =====================================================
+
+const now =
+    new Date();
+
+
+const year =
+    now.getFullYear();
+
+
+const month =
+    String(
+        now.getMonth() + 1
+    ).padStart(2, "0");
+
+
+const day =
+    String(
+        now.getDate()
+    ).padStart(2, "0");
+
+
+const today =
+    `${year}-${month}-${day}`;
+
+
+date.min =
+    today;
+
+
+// =====================================================
+// DEPARTMENT CHANGE
+// =====================================================
+
+department.addEventListener(
+    "change",
+    function () {
+
+        const selectedDepartment =
+            this.value;
+
+
+        doctor.value =
+            doctors[
+                selectedDepartment
+            ] || "";
+
+
+        selectedTime.value =
+            "";
+
+
+        recommendation.innerHTML =
+            "Select a date to see available AI-recommended slots.";
+
+
+        if (
+            selectedDepartment &&
+            date.value
+        ) {
+
+            loadRecommendation();
+
+        }
+
+    }
+);
+
+
+// =====================================================
+// DATE CHANGE
+// =====================================================
+
+date.addEventListener(
+    "change",
+    function () {
+
+        selectedTime.value =
+            "";
+
+
+        loadRecommendation();
+
+    }
+);
+
+
+// =====================================================
+// AI RECOMMENDATION
+// =====================================================
+
+async function loadRecommendation() {
+
+    const selectedDepartment =
+        department.value;
+
+
+    const selectedDate =
+        date.value;
+
+
+    if (
+        !selectedDepartment ||
+        !selectedDate
+    ) {
+
+        recommendation.innerHTML =
+            "Select department and date.";
+
+        return;
+
+    }
+
+
+    recommendation.innerHTML =
+        "🤖 AI is checking available slots...";
+
+
+    const url =
+        `${API}/recommendation?department=${encodeURIComponent(selectedDepartment)}&date=${encodeURIComponent(selectedDate)}`;
+
+
+    console.log(
+        "SmartCare API:",
+        url
+    );
+
+
+    try {
+
+        const response =
+            await fetch(
+                url,
+                {
+                    method: "GET"
+                }
+            );
+
+
+        console.log(
+            "API status:",
+            response.status
+        );
+
+
+        if (!response.ok) {
+
+            let errorMessage =
+                "Unable to get recommendations.";
+
+
+            try {
+
+                const errorData =
+                    await response.json();
+
+
+                if (
+                    errorData.detail
+                ) {
+
+                    errorMessage =
+                        errorData.detail;
+
+                }
+
+            }
+
+            catch (e) {
+
+                // Ignore JSON error
+
+            }
+
+
+            throw new Error(
+                errorMessage
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Recommendation data:",
+            data
+        );
+
+
+        const slots =
+            data.slots || [];
+
+
+        if (!slots.length) {
+
+            recommendation.innerHTML =
+                `
+                <div style="
+                    padding:12px;
+                    color:#c0392b;
+                    font-weight:600;
+                ">
+                    No slots available for this department.
+                </div>
+                `;
+
+            return;
+
+        }
+
+
+        let html =
+            '<div class="time-options">';
+
+
+        slots.forEach(
+            function (slot) {
+
+                const time =
+                    slot.time || "";
+
+
+                const wait =
+                    slot.wait_minutes ?? 0;
+
+
+                html += `
+
+                    <button
+                        type="button"
+                        class="time-btn"
+                        onclick="selectTime('${time}', this)"
+                    >
+
+                        ${time}
+
+                        <br>
+
+                        <small>
+                            ${wait} min expected wait
+                        </small>
+
+                    </button>
+
+                `;
+
+            }
+        );
+
+
+        html +=
+            "</div>";
+
+
+        recommendation.innerHTML =
+            html;
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "SmartCare recommendation error:",
+            error
+        );
+
+
+        recommendation.innerHTML =
+            `
+            <div style="
+                color:#c0392b;
+                font-weight:600;
+                padding:10px 0;
+            ">
+                ⚠️ ${error.message}
+            </div>
+
+            <div style="
+                color:#6b7f8c;
+                font-size:13px;
+                margin-top:5px;
+            ">
+                Make sure SmartCare backend is running on
+                http://127.0.0.1:8000
+            </div>
+            `;
+
+    }
+
+}
+
+
+// =====================================================
+// SELECT TIME
+// =====================================================
+
+function selectTime(
+    time,
+    button
+) {
+
+    document
+        .querySelectorAll(
+            ".time-btn"
+        )
+        .forEach(
+            function (btn) {
+
+                btn.classList.remove(
+                    "selected"
+                );
+
+            }
+        );
+
+
+    button.classList.add(
+        "selected"
+    );
+
+
+    selectedTime.value =
+        time;
+
+}
+
+
+// =====================================================
+// BOOK APPOINTMENT
+// =====================================================
+
+appointmentForm.addEventListener(
+    "submit",
+    async function (event) {
+
+        event.preventDefault();
+
+
+        message.className =
+            "";
+
+
+        if (!department.value) {
+
+            message.className =
+                "error";
+
+
+            message.textContent =
+                "Please select a department.";
+
+
+            return;
+
+        }
+
+
+        if (!date.value) {
+
+            message.className =
+                "error";
+
+
+            message.textContent =
+                "Please select a date.";
+
+
+            return;
+
+        }
+
+
+        if (!selectedTime.value) {
+
+            message.className =
+                "error";
+
+
+            message.textContent =
+                "Please select an appointment time.";
+
+
+            return;
+
+        }
+
+
+        bookButton.disabled =
+            true;
+
+
+        bookButton.textContent =
+            "Booking...";
+
+
+        try {
+
+            const bookingData = {
+
+                patient_id:
+                    user.id,
+
+                department:
+                    department.value,
+
+                doctor:
+                    doctor.value,
+
+                date:
+                    date.value,
+
+                time:
+                    selectedTime.value
+
+            };
+
+
+            console.log(
+                "Booking:",
+                bookingData
+            );
+
+
+            const response =
+                await fetch(
+                    `${API}/appointments`,
+                    {
+
+                        method:
+                            "POST",
+
+                        headers: {
+
+                            "Content-Type":
+                                "application/json"
+
+                        },
+
+                        body:
+                            JSON.stringify(
+                                bookingData
+                            )
+
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            console.log(
+                "Booking response:",
+                data
+            );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.detail ||
+                    "Appointment booking failed."
+                );
+
+            }
+
+
+            const appointment =
+                data.appointment;
+
+
+            if (!appointment) {
+
+                throw new Error(
+                    "Appointment data was not returned by the server."
+                );
+
+            }
+
+
+            const token =
+                appointment.token ||
+                "--";
+
+
+            const bookedTime =
+                appointment.planned_time ||
+                appointment.time ||
+                selectedTime.value;
+
+
+            message.className =
+                "success";
+
+
+            message.textContent =
+                "Appointment booked successfully!";
+
+
+            document
+                .getElementById(
+                    "confirmation"
+                )
+                .style.display =
+                "block";
+
+
+            document
+                .getElementById(
+                    "token"
+                )
+                .textContent =
+                token;
+
+
+            document
+                .getElementById(
+                    "confirmationText"
+                )
+                .textContent =
+
+                "Appointment for " +
+                department.value +
+                " with " +
+                doctor.value +
+                " on " +
+                date.value +
+                " at " +
+                bookedTime +
+                " has been booked.";
+
+
+            bookButton.textContent =
+                "Appointment Booked";
+
+
+            loadTokenTracking();
+
+        }
+
+
+        catch (error) {
+
+            console.error(
+                "Booking error:",
+                error
+            );
+
+
+            message.className =
+                "error";
+
+
+            message.textContent =
+                error.message;
+
+
+            bookButton.disabled =
+                false;
+
+
+            bookButton.textContent =
+                "Book Appointment";
+
+        }
+
+    }
+);
+
+
+// =====================================================
+// TOKEN TRACKING
+// =====================================================
+
+async function loadTokenTracking() {
+
+    try {
+
+        const response =
+            await fetch(
+                `${API}/patient/${user.id}`
+            );
+
+
+        if (!response.ok) {
+
+            hideTokenTracking();
+
+            return;
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Patient appointments:",
+            data
+        );
+
+
+        const appointments =
+            Array.isArray(data)
+                ? data
+                : (
+                    data.appointments ||
+                    data.my_appointments ||
+                    []
+                );
+
+
+        const activeAppointment =
+            appointments.find(
+                function (appointment) {
+
+                    return (
+                        appointment.status !==
+                            "cancelled"
+
+                        &&
+
+                        appointment.status !==
+                            "completed"
+                    );
+
+                }
+            );
+
+
+        /*
+         * If the patient has cancelled the appointment,
+         * token tracking is hidden.
+         */
+
+        if (!activeAppointment) {
+
+            hideTokenTracking();
+
+            return;
+
+        }
+
+
+        cancelledBox.style.display =
+            "none";
+
+
+        tokenTracking.style.display =
+            "block";
+
+
+        document
+            .getElementById(
+                "liveToken"
+            )
+            .textContent =
+            activeAppointment.token ||
+            "--";
+
+
+        document
+            .getElementById(
+                "liveStatus"
+            )
+            .textContent =
+            formatStatus(
+                activeAppointment.status
+            );
+
+
+        const activePatients =
+            appointments.filter(
+                function (appointment) {
+
+                    return (
+
+                        appointment.status !==
+                            "cancelled"
+
+                        &&
+
+                        appointment.status !==
+                            "completed"
+
+                        &&
+
+                        appointment.department ===
+                            activeAppointment.department
+
+                    );
+
+                }
+            );
+
+
+        let patientsAhead =
+            0;
+
+
+        const currentTokenNumber =
+            getTokenNumber(
+                activeAppointment.token
+            );
+
+
+        if (
+            currentTokenNumber !== null
+        ) {
+
+            activePatients.forEach(
+                function (appointment) {
+
+                    const tokenNumber =
+                        getTokenNumber(
+                            appointment.token
+                        );
+
+
+                    if (
+                        tokenNumber !== null
+                        &&
+                        tokenNumber <
+                            currentTokenNumber
+                    ) {
+
+                        patientsAhead++;
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        document
+            .getElementById(
+                "patientsAhead"
+            )
+            .textContent =
+            patientsAhead;
+
+
+        const estimatedWait =
+            patientsAhead * 10;
+
+
+        document
+            .getElementById(
+                "estimatedWait"
+            )
+            .textContent =
+            estimatedWait +
+            " min";
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "Token tracking error:",
+            error
+        );
+
+
+        hideTokenTracking();
+
+    }
+
+}
+
+
+// =====================================================
+// HIDE TOKEN TRACKING
+// =====================================================
+
+function hideTokenTracking() {
+
+    tokenTracking.style.display =
+        "none";
+
+}
+
+
+// =====================================================
+// TOKEN NUMBER
+// =====================================================
+
+function getTokenNumber(token) {
+
+    if (!token) {
+
+        return null;
+
+    }
+
+
+    const match =
+        String(token).match(
+            /\d+/
+        );
+
+
+    if (!match) {
+
+        return null;
+
+    }
+
+
+    return parseInt(
+        match[0],
+        10
+    );
+
+}
+
+
+// =====================================================
+// FORMAT STATUS
+// =====================================================
+
+function formatStatus(status) {
+
+    if (!status) {
+
+        return "--";
+
+    }
+
+
+    const formatted =
+        String(status)
+            .replace(
+                "_",
+                " "
+            );
+
+
+    return formatted
+        .charAt(0)
+        .toUpperCase()
+        +
+        formatted.slice(1);
+
+}
+
+
+// =====================================================
+// TOKEN REFRESH
+// =====================================================
+
+setInterval(
+    loadTokenTracking,
+    10000
+);
+
+
+// =====================================================
+// INITIAL TOKEN LOAD
+// =====================================================
+
+loadTokenTracking();
+
+
+// =====================================================
+// LOGOUT
+// =====================================================
+
+function logout() {
+
+    sessionStorage.removeItem(
+        "user"
+    );
+
+
+    localStorage.removeItem(
+        "user"
+    );
+
+
+    window.location.href =
+        "login.html";
+
+}
+
+
+// =====================================================
+// LEAVE PAGE CHECK
+// =====================================================
+
+/*
+ * We do NOT logout when changing between
+ * SmartCare pages.
+ *
+ * We only remove the session when the page
+ * is being unloaded and the destination is
+ * outside the SmartCare website.
+ */
+
+window.addEventListener(
+    "pagehide",
+    function () {
+
+        /*
+         * Do nothing here.
+         *
+         * Browser/tab closing is handled by
+         * sessionStorage automatically.
+         *
+         * This prevents logout when moving
+         * between book-appointment.html,
+         * queue.html, etc.
+         */
+
+    }
+);
+
+</script>
+
+
+</body>
+
+</html>

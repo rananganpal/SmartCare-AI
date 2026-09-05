@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Create Account - SmartCare AI</title>
+
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            font-family: Arial, Helvetica, sans-serif;
+
+            min-height: 100vh;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #eaf7ff,
+                    #f8fcff,
+                    #e8f8f5
+                );
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            padding: 30px 20px;
+
+            color: #173f60;
+        }
+
+
+        /* ===============================
+           MAIN CONTAINER
+        =============================== */
+
+        .register-container {
+
+            width: 100%;
+
+            max-width: 500px;
+        }
+
+
+        /* ===============================
+           CARD
+        =============================== */
+
+        .register-card {
+
+            background: white;
+
+            padding: 38px;
+
+            border-radius: 22px;
+
+            border: 1px solid #dcecf7;
+
+            box-shadow:
+                0 20px 60px
+                rgba(20, 70, 100, 0.14);
+        }
+
+
+        /* ===============================
+           LOGO
+        =============================== */
+
+        .logo {
+
+            text-align: center;
+
+            font-size: 25px;
+
+            font-weight: 800;
+
+            color: #1261a0;
+
+            margin-bottom: 22px;
+        }
+
+
+        .logo-icon {
+
+            display: block;
+
+            font-size: 40px;
+
+            margin-bottom: 6px;
+        }
+
+
+        .logo span {
+
+            color: #19a7a8;
+        }
+
+
+        /* ===============================
+           HEADING
+        =============================== */
+
+        h1 {
+
+            text-align: center;
+
+            font-size: 32px;
+
+            color: #123f68;
+
+            margin-bottom: 7px;
+        }
+
+
+        .subtitle {
+
+            text-align: center;
+
+            color: #718798;
+
+            font-size: 14px;
+
+            margin-bottom: 25px;
+        }
+
+
+        /* ===============================
+           FORM
+        =============================== */
+
+        .form-group {
+
+            margin-bottom: 17px;
+        }
+
+
+        label {
+
+            display: block;
+
+            color: #34566f;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            margin-bottom: 7px;
+        }
+
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        select {
+
+            width: 100%;
+
+            height: 46px;
+
+            padding: 0 13px;
+
+            border: 1px solid #cbddea;
+
+            border-radius: 9px;
+
+            background: #f9fcff;
+
+            color: #183b57;
+
+            font-size: 14px;
+
+            outline: none;
+        }
+
+
+        input:focus,
+        select:focus {
+
+            border-color: #1261a0;
+
+            background: white;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(18, 97, 160, 0.10);
+        }
+
+
+        /* ===============================
+           ACCOUNT TYPE
+        =============================== */
+
+        .role-options {
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 12px;
+        }
+
+
+        .role-option {
+
+            height: 46px;
+
+            border: 1px solid #cbddea;
+
+            border-radius: 9px;
+
+            background: #f9fcff;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+
+        .role-option:hover {
+
+            background: #eef8ff;
+
+            border-color: #1261a0;
+        }
+
+
+        .role-option input {
+
+            margin-right: 7px;
+
+            accent-color: #1261a0;
+        }
+
+
+        .role-option span {
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            color: #34566f;
+        }
+
+
+        /* ===============================
+           CREATE ACCOUNT BUTTON
+        =============================== */
+
+        .register-btn {
+
+            width: 100%;
+
+            height: 50px;
+
+            border: none;
+
+            border-radius: 9px;
+
+            background: #1261a0;
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            margin-top: 5px;
+
+            transition: 0.2s;
+        }
+
+
+        .register-btn:hover {
+
+            background: #0c4f85;
+
+            transform: translateY(-1px);
+        }
+
+
+        /* ===============================
+           MESSAGE
+        =============================== */
+
+        #message {
+
+            min-height: 22px;
+
+            text-align: center;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            margin-bottom: 8px;
+        }
+
+
+        .success {
+
+            color: #16804f;
+        }
+
+
+        .error {
+
+            color: #c0392b;
+        }
+
+
+        /* ===============================
+           BOTTOM LINKS
+        =============================== */
+
+        .bottom {
+
+            text-align: center;
+
+            margin-top: 22px;
+
+            color: #718798;
+
+            font-size: 14px;
+        }
+
+
+        .bottom a {
+
+            color: #1261a0;
+
+            font-weight: 700;
+
+            text-decoration: none;
+        }
+
+
+        .bottom a:hover {
+
+            text-decoration: underline;
+        }
+
+
+        .home {
+
+            display: inline-block;
+
+            margin-top: 13px;
+        }
+
+
+        /* ===============================
+           MOBILE
+        =============================== */
+
+        @media (max-width: 520px) {
+
+            .register-card {
+
+                padding: 28px 21px;
+
+            }
+
+
+            h1 {
+
+                font-size: 28px;
+
+            }
+
+
+            .role-options {
+
+                grid-template-columns: 1fr;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="register-container">
+
+        <div class="register-card">
+
+
+            <!-- LOGO -->
+
+            <div class="logo">
+
+                <span class="logo-icon">
+                    🏥
+                </span>
+
+                SmartCare <span>AI</span>
+
+            </div>
+
+
+            <!-- HEADING -->
+
+            <h1>
+                Create Account
+            </h1>
+
+
+            <p class="subtitle">
+                Join SmartCare and manage healthcare smarter
+            </p>
+
+
+            <!-- FORM -->
+
+            <form id="registerForm">
+
+
+                <!-- NAME -->
+
+                <div class="form-group">
+
+                    <label for="name">
+                        Full Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="name"
+                        placeholder="Enter your full name"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- EMAIL -->
+
+                <div class="form-group">
+
+                    <label for="email">
+                        Email Address
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="you@example.com"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- ROLE -->
+
+                <div class="form-group">
+
+                    <label>
+                        Account Type
+                    </label>
+
+
+                    <div class="role-options">
+
+
+                        <label class="role-option">
+
+                            <input
+                                type="radio"
+                                name="role"
+                                value="patient"
+                                checked
+                            >
+
+                            <span>
+                                👤 Patient
+                            </span>
+
+                        </label>
+
+
+                        <label class="role-option">
+
+                            <input
+                                type="radio"
+                                name="role"
+                                value="doctor"
+                            >
+
+                            <span>
+                                👨‍⚕️ Doctor
+                            </span>
+
+                        </label>
+
+
+                    </div>
+
+                </div>
+
+
+                <!-- DOCTOR DEPARTMENT -->
+
+                <div
+                    class="form-group"
+                    id="doctorDepartmentBox"
+                    style="display: none;"
+                >
+
+                    <label for="department">
+                        Doctor Department
+                    </label>
+
+                    <select id="department">
+
+                        <option value="">
+                            Select Department
+                        </option>
+
+                        <option value="Cardiology">
+                            Cardiology
+                        </option>
+
+                        <option value="Orthopedics">
+                            Orthopedics
+                        </option>
+
+                        <option value="Dermatology">
+                            Dermatology
+                        </option>
+
+                        <option value="Neurology">
+                            Neurology
+                        </option>
+
+                        <option value="Ophthalmology">
+                            Ophthalmology
+                        </option>
+
+                        <option value="ENT">
+                            ENT
+                        </option>
+
+                        <option value="General Medicine">
+                            General Medicine
+                        </option>
+
+                        <option value="Pediatrics">
+                            Pediatrics
+                        </option>
+
+                        <option value="Gynecology">
+                            Gynecology
+                        </option>
+
+                        <option value="Dental">
+                            Dental
+                        </option>
+
+                        <option value="Pulmonology">
+                            Pulmonology
+                        </option>
+
+                        <option value="Oncology">
+                            Oncology
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- PASSWORD -->
+
+                <div class="form-group">
+
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Create a password"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- CONFIRM PASSWORD -->
+
+                <div class="form-group">
+
+                    <label for="confirmPassword">
+                        Confirm Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="confirmPassword"
+                        placeholder="Confirm your password"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- MESSAGE -->
+
+                <div id="message"></div>
+
+
+                <!-- BUTTON -->
+
+                <button
+                    type="submit"
+                    class="register-btn"
+                >
+                    Create Account
+                </button>
+
+
+            </form>
+
+
+            <!-- BOTTOM -->
+
+            <div class="bottom">
+
+                <p>
+
+                    Already have an account?
+
+                    <a href="login.html">
+                        Login
+                    </a>
+
+                </p>
+
+
+                <a
+                    href="index.html"
+                    class="home"
+                >
+                    ← Back to Home
+                </a>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- ===============================
+         JAVASCRIPT
+    =============================== -->
+
+    <script>
+
+        const API =
+            "http://127.0.0.1:8000";
+
+
+        const roleInputs =
+            document.querySelectorAll(
+                'input[name="role"]'
+            );
+
+
+        const departmentBox =
+            document.getElementById(
+                "doctorDepartmentBox"
+            );
+
+
+        const department =
+            document.getElementById(
+                "department"
+            );
+
+
+        /* Show department for doctor */
+
+        roleInputs.forEach(function (radio) {
+
+            radio.addEventListener(
+                "change",
+                function () {
+
+                    if (
+                        this.value === "doctor"
+                    ) {
+
+                        departmentBox.style.display =
+                            "block";
+
+                        department.required =
+                            true;
+
+                    } else {
+
+                        departmentBox.style.display =
+                            "none";
+
+                        department.required =
+                            false;
+
+                        department.value =
+                            "";
+
+                    }
+
+                }
+            );
+
+        });
+
+
+        /* ===============================
+           REGISTER
+        =============================== */
+
+        document
+            .getElementById("registerForm")
+            .addEventListener(
+                "submit",
+                async function(event) {
+
+                    event.preventDefault();
+
+
+                    const name =
+                        document
+                            .getElementById("name")
+                            .value
+                            .trim();
+
+
+                    const email =
+                        document
+                            .getElementById("email")
+                            .value
+                            .trim();
+
+
+                    const password =
+                        document
+                            .getElementById("password")
+                            .value;
+
+
+                    const confirmPassword =
+                        document
+                            .getElementById(
+                                "confirmPassword"
+                            )
+                            .value;
+
+
+                    const role =
+                        document
+                            .querySelector(
+                                'input[name="role"]:checked'
+                            )
+                            .value;
+
+
+                    const message =
+                        document
+                            .getElementById(
+                                "message"
+                            );
+
+
+                    /* Password validation */
+
+                    if (
+                        password !==
+                        confirmPassword
+                    ) {
+
+                        message.className =
+                            "error";
+
+                        message.textContent =
+                            "Passwords do not match.";
+
+                        return;
+
+                    }
+
+
+                    if (
+                        password.length < 4
+                    ) {
+
+                        message.className =
+                            "error";
+
+                        message.textContent =
+                            "Password must contain at least 4 characters.";
+
+                        return;
+
+                    }
+
+
+                    const selectedDepartment =
+                        role === "doctor"
+                            ? department.value
+                            : null;
+
+
+                    try {
+
+                        const response =
+                            await fetch(
+                                API + "/register",
+                                {
+
+                                    method: "POST",
+
+                                    headers: {
+
+                                        "Content-Type":
+                                            "application/json"
+
+                                    },
+
+                                    body:
+                                        JSON.stringify({
+
+                                            name:
+                                                name,
+
+                                            email:
+                                                email,
+
+                                            password:
+                                                password,
+
+                                            role:
+                                                role,
+
+                                            department:
+                                                selectedDepartment
+
+                                        })
+
+                                }
+                            );
+
+
+                        const data =
+                            await response.json();
+
+
+                        if (!response.ok) {
+
+                            let errorMessage =
+                                "Registration failed.";
+
+                            if (
+                                typeof data.detail ===
+                                "string"
+                            ) {
+
+                                errorMessage =
+                                    data.detail;
+
+                            }
+
+                            throw new Error(
+                                errorMessage
+                            );
+
+                        }
+
+
+                        message.className =
+                            "success";
+
+                        message.textContent =
+                            "Account created successfully!";
+
+
+                        /* Go to login */
+
+                        setTimeout(
+                            function() {
+
+                                window.location.href =
+                                    "login.html";
+
+                            },
+                            1000
+                        );
+
+
+                    } catch(error) {
+
+                        message.className =
+                            "error";
+
+                        message.textContent =
+                            error.message;
+
+                    }
+
+                }
+            );
+
+    </script>
+
+
+</body>
+
+</html>

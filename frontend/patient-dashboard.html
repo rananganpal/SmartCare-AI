@@ -1,0 +1,2010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+    <title>SmartCare AI - Patient Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: #f4f8fc;
+            color: #173b63;
+        }
+        .navbar {
+            height: 72px;
+            background: white;
+            border-bottom: 1px solid #e3edf5;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 45px;
+
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: 800;
+            color: #1769aa;
+        }
+
+        .logo span {
+            color: #00a6a6;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .nav-right a {
+            text-decoration: none;
+            color: #47637e;
+            font-weight: 600;
+        }
+
+        .nav-right a:hover {
+            color: #1769aa;
+        }
+
+        .logout {
+            border: none;
+            background: #eaf3fb;
+            color: #1769aa;
+
+            padding: 10px 18px;
+
+            border-radius: 9px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .logout:hover {
+            background: #dcecf9;
+        }
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 35px 25px;
+        }
+
+        .welcome {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 30px;
+        }
+
+        .welcome h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+            color: #173b63;
+        }
+
+        .welcome p {
+            color: #71859a;
+            font-size: 16px;
+        }
+
+        .profile-icon {
+            width: 52px;
+            height: 52px;
+
+            border-radius: 50%;
+
+            background: #dff3f2;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 24px;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+
+            gap: 18px;
+
+            margin-bottom: 28px;
+        }
+
+        .stat-card {
+            background: white;
+
+            border-radius: 15px;
+
+            padding: 22px;
+
+            border: 1px solid #e5edf4;
+
+            box-shadow:
+                0 5px 18px rgba(40, 80, 120, 0.06);
+        }
+
+        .stat-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-title {
+            color: #7890a7;
+
+            font-size: 14px;
+
+            font-weight: 600;
+        }
+
+        .stat-icon {
+            width: 38px;
+            height: 38px;
+
+            border-radius: 10px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #eaf5ff;
+
+            font-size: 19px;
+        }
+
+        .stat-value {
+            margin-top: 15px;
+
+            font-size: 27px;
+
+            font-weight: 800;
+
+            color: #173b63;
+        }
+        .dashboard-grid {
+            display: grid;
+
+            grid-template-columns: 1.4fr 1fr;
+
+            gap: 22px;
+        }
+
+        .card {
+            background: white;
+
+            border: 1px solid #e3edf5;
+
+            border-radius: 16px;
+
+            padding: 25px;
+
+            box-shadow:
+                0 6px 20px rgba(40, 80, 120, 0.06);
+        }
+
+        .card-header {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 22px;
+        }
+
+        .card-header h2 {
+            font-size: 20px;
+
+            color: #173b63;
+        }
+
+        .view-link {
+            color: #1683b8;
+
+            font-size: 14px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        /* ================= QUEUE ================= */
+
+        .queue-main {
+            display: flex;
+
+            align-items: center;
+
+            gap: 25px;
+
+            padding: 20px;
+
+            background: #f5faff;
+
+            border-radius: 13px;
+        }
+
+        .token {
+            width: 90px;
+            height: 90px;
+
+            flex-shrink: 0;
+
+            border-radius: 50%;
+
+            background: #1769aa;
+
+            color: white;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: center;
+        }
+
+        .token small {
+            font-size: 11px;
+        }
+
+        .token strong {
+            font-size: 25px;
+        }
+
+        .queue-info h3 {
+            margin-bottom: 8px;
+
+            color: #173b63;
+        }
+
+        .queue-info p {
+            color: #71859a;
+
+            margin-bottom: 6px;
+        }
+
+        .status {
+            display: inline-block;
+
+            margin-top: 10px;
+
+            padding: 6px 12px;
+
+            border-radius: 20px;
+
+            background: #e3f7ee;
+
+            color: #168456;
+
+            font-size: 12px;
+
+            font-weight: bold;
+        }
+
+        /* ================= AI ================= */
+
+        .ai-card {
+            background:
+                linear-gradient(
+                    135deg,
+                    #edf9fa,
+                    #f5fbff
+                );
+
+            border: 1px solid #ccebea;
+        }
+
+        .ai-header {
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+        }
+
+        .robot {
+            width: 45px;
+            height: 45px;
+
+            border-radius: 12px;
+
+            background: #00a6a6;
+
+            color: white;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 22px;
+        }
+
+        .ai-header h2 {
+            font-size: 20px;
+        }
+
+        .ai-text {
+            color: #607b91;
+
+            line-height: 1.6;
+
+            margin: 18px 0;
+        }
+
+        .recommendation {
+            background: white;
+
+            border-radius: 12px;
+
+            padding: 16px;
+
+            border: 1px solid #dcecef;
+        }
+
+        .recommendation-title {
+            font-size: 13px;
+
+            color: #7890a7;
+
+            margin-bottom: 8px;
+        }
+
+        .recommended-time {
+            font-size: 22px;
+
+            font-weight: 800;
+
+            color: #008b8b;
+        }
+
+        .recommendation p {
+            color: #71859a;
+
+            font-size: 13px;
+
+            margin-top: 5px;
+        }
+
+        /* ================= BUTTON ================= */
+
+        .book-btn {
+            width: 100%;
+
+            margin-top: 20px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            padding: 14px;
+
+            background: #1769aa;
+
+            color: white;
+
+            font-size: 15px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .book-btn:hover {
+            background: #12578f;
+        }
+
+        /* ================= APPOINTMENTS ================= */
+
+        .appointment {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            padding: 17px 0;
+
+            border-bottom: 1px solid #edf1f5;
+        }
+
+        .appointment:last-child {
+            border-bottom: none;
+        }
+
+        .doctor {
+            display: flex;
+
+            align-items: center;
+
+            gap: 13px;
+        }
+
+        .doctor-icon {
+            width: 43px;
+            height: 43px;
+
+            border-radius: 11px;
+
+            background: #eef6ff;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 21px;
+        }
+
+        .doctor h4 {
+            margin-bottom: 5px;
+
+            color: #173b63;
+        }
+
+        .doctor p {
+            color: #7a8fa3;
+
+            font-size: 13px;
+        }
+
+        .appointment-time {
+            text-align: right;
+        }
+
+        .appointment-time strong {
+            display: block;
+
+            color: #173b63;
+        }
+
+        .appointment-time span {
+            color: #7890a7;
+
+            font-size: 12px;
+        }
+
+        /* ================= CANCEL BUTTON ================= */
+
+        .cancel-btn {
+            margin-left: 15px;
+
+            border: none;
+
+            background: #ffecec;
+
+            color: #d93636;
+
+            padding: 9px 13px;
+
+            border-radius: 8px;
+
+            font-size: 12px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .cancel-btn:hover {
+            background: #ffdada;
+        }
+
+        .cancelled-status {
+            display: inline-block;
+
+            margin-left: 15px;
+
+            margin-top: 8px;
+
+            padding: 7px 12px;
+
+            border-radius: 20px;
+
+            background: #ffecec;
+
+            color: #d93636;
+
+            font-size: 12px;
+
+            font-weight: bold;
+        }
+
+        /* ================= QUICK ACTIONS ================= */
+
+        .quick-actions {
+            margin-top: 22px;
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 15px;
+        }
+
+        .quick {
+            background: white;
+
+            border: 1px solid #e3edf5;
+
+            border-radius: 13px;
+
+            padding: 20px;
+
+            text-align: center;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+        .quick:hover {
+            transform: translateY(-3px);
+
+            box-shadow:
+                0 7px 18px
+                rgba(40, 80, 120, 0.1);
+        }
+
+        .quick-icon {
+            font-size: 27px;
+
+            margin-bottom: 9px;
+        }
+
+        .quick h3 {
+            font-size: 14px;
+
+            color: #173b63;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media(max-width: 900px) {
+
+            .stats {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+        @media(max-width: 600px) {
+
+            .navbar {
+                padding: 0 18px;
+            }
+
+            .nav-right {
+                gap: 10px;
+            }
+
+            .nav-right a {
+                display: none;
+            }
+
+            .container {
+                padding: 25px 15px;
+            }
+
+            .welcome h1 {
+                font-size: 25px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .queue-main {
+                flex-direction: column;
+
+                align-items: flex-start;
+            }
+
+            .appointment {
+                flex-direction: column;
+
+                align-items: flex-start;
+
+                gap: 15px;
+            }
+
+            .appointment-time {
+                text-align: left;
+
+                width: 100%;
+            }
+
+            .cancel-btn,
+            .cancelled-status {
+                margin-left: 0;
+
+                margin-top: 8px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- ================= NAVBAR ================= -->
+
+<nav class="navbar">
+
+    <div class="logo">
+        🏥 SmartCare <span>AI</span>
+    </div>
+
+    <div class="nav-right">
+
+        <a href="patient-dashboard.html">
+            Dashboard
+        </a>
+
+        <a href="book-appointment.html">
+            Appointments
+        </a>
+
+        <a href="queue.html">
+            My Queue
+        </a>
+
+        <button
+            class="logout"
+            onclick="logout()">
+
+            Logout
+
+        </button>
+
+    </div>
+
+</nav>
+
+
+<!-- ================= MAIN ================= -->
+
+<main class="container">
+
+
+    <!-- ================= WELCOME ================= -->
+
+    <div class="welcome">
+
+        <div>
+
+            <h1>
+                Patient Dashboard
+            </h1>
+
+            <p id="welcomeText">
+                Welcome back 👋
+            </p>
+
+        </div>
+
+        <div class="profile-icon">
+            👤
+        </div>
+
+    </div>
+
+
+    <!-- ================= STATISTICS ================= -->
+
+    <div class="stats">
+
+
+        <div class="stat-card">
+
+            <div class="stat-top">
+
+                <span class="stat-title">
+                    TODAY'S TOKEN
+                </span>
+
+                <div class="stat-icon">
+                    🎟️
+                </div>
+
+            </div>
+
+            <div
+                class="stat-value"
+                id="token">
+
+                —
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-top">
+
+                <span class="stat-title">
+                    PATIENTS AHEAD
+                </span>
+
+                <div class="stat-icon">
+                    👥
+                </div>
+
+            </div>
+
+            <div
+                class="stat-value"
+                id="ahead">
+
+                —
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-top">
+
+                <span class="stat-title">
+                    ESTIMATED WAIT
+                </span>
+
+                <div class="stat-icon">
+                    ⏱️
+                </div>
+
+            </div>
+
+            <div
+                class="stat-value"
+                id="wait">
+
+                —
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-top">
+
+                <span class="stat-title">
+                    STATUS
+                </span>
+
+                <div class="stat-icon">
+                    ✓
+                </div>
+
+            </div>
+
+            <div
+                class="stat-value"
+                id="status">
+
+                —
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= MAIN CARDS ================= -->
+
+    <div class="dashboard-grid">
+
+
+        <!-- ================= QUEUE CARD ================= -->
+
+        <div class="card">
+
+            <div class="card-header">
+
+                <h2>
+                    🎟️ Today's Queue
+                </h2>
+
+                <span
+                    class="view-link"
+                    onclick="location.href='queue.html'">
+
+                    View Queue →
+
+                </span>
+
+            </div>
+
+
+            <div class="queue-main">
+
+
+                <div class="token">
+
+                    <small>
+                        TOKEN
+                    </small>
+
+                    <strong id="bigToken">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="queue-info">
+
+                    <h3 id="queueDepartment">
+                        No active appointment
+                    </h3>
+
+                    <p>
+                        Patients ahead:
+                        <strong id="queueAhead">
+                            —
+                        </strong>
+                    </p>
+
+                    <p>
+                        Estimated waiting:
+                        <strong id="queueWait">
+                            —
+                        </strong>
+                    </p>
+
+                    <span
+                        class="status"
+                        id="queueStatus">
+
+                        No Appointment
+
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <button
+                class="book-btn"
+                onclick="location.href='book-appointment.html'">
+
+                + Book New Appointment
+
+            </button>
+
+        </div>
+
+
+        <!-- ================= AI CARD ================= -->
+
+        <div class="card ai-card">
+
+
+            <div class="ai-header">
+
+                <div class="robot">
+                    🤖
+                </div>
+
+                <div>
+
+                    <h2>
+                        AI Slot Recommendation
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <p class="ai-text">
+
+                SmartCare AI analyzes appointment demand
+                and queue load to suggest a better time
+                for your consultation.
+
+            </p>
+
+
+            <div class="recommendation">
+
+                <div class="recommendation-title">
+
+                    RECOMMENDED TIME
+
+                </div>
+
+
+                <div
+                    class="recommended-time"
+                    id="recommendedTime">
+
+                    Loading...
+
+                </div>
+
+
+                <p id="recommendationText">
+
+                    Select an appointment to receive
+                    an AI recommendation.
+
+                </p>
+
+            </div>
+
+
+            <button
+                class="book-btn"
+                onclick="location.href='book-appointment.html'">
+
+                Book Recommended Slot
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= APPOINTMENTS ================= -->
+
+    <div
+        class="card"
+        style="margin-top:22px;">
+
+        <div class="card-header">
+
+            <h2>
+                📅 My Appointments
+            </h2>
+
+            <span
+                class="view-link"
+                onclick="location.href='book-appointment.html'">
+
+                + New Appointment
+
+            </span>
+
+        </div>
+
+
+        <div id="appointments">
+
+            <p style="color:#7890a7;">
+
+                Loading appointments...
+
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= QUICK ACTIONS ================= -->
+
+    <div class="quick-actions">
+
+
+        <div
+            class="quick"
+            onclick="location.href='book-appointment.html'">
+
+            <div class="quick-icon">
+                📅
+            </div>
+
+            <h3>
+                Book Appointment
+            </h3>
+
+        </div>
+
+
+        <div
+            class="quick"
+            onclick="location.href='queue.html'">
+
+            <div class="quick-icon">
+                🎟️
+            </div>
+
+            <h3>
+                Track My Queue
+            </h3>
+
+        </div>
+
+
+        <div
+            class="quick"
+            onclick="location.reload()">
+
+            <div class="quick-icon">
+                🔄
+            </div>
+
+            <h3>
+                Refresh Dashboard
+            </h3>
+
+        </div>
+
+    </div>
+
+
+</main>
+
+
+<script>
+
+
+    /* =====================================================
+       API
+    ===================================================== */
+
+    const API =
+        "http://127.0.0.1:8000";
+
+
+    /* =====================================================
+       GET LOGGED-IN USER
+       
+       IMPORTANT:
+       We use sessionStorage because the login page
+       stores the logged-in user there.
+    ===================================================== */
+
+    let user = null;
+
+
+    try {
+
+        user =
+            JSON.parse(
+                sessionStorage.getItem("user") || "null"
+            );
+
+    }
+
+    catch(error) {
+
+        console.log(
+            "Unable to read user:",
+            error
+        );
+
+        user = null;
+
+    }
+
+
+    /* =====================================================
+       LOGIN CHECK
+    ===================================================== */
+
+    if (!user) {
+
+        window.location.replace(
+            "login.html"
+        );
+
+    }
+
+
+    if (
+        user &&
+        user.role !== "patient"
+    ) {
+
+        alert(
+            "Patient account required."
+        );
+
+        sessionStorage.removeItem("user");
+
+        localStorage.removeItem("user");
+
+        window.location.replace(
+            "login.html"
+        );
+
+    }
+
+
+    /* =====================================================
+       WELCOME MESSAGE
+    ===================================================== */
+
+    if (user) {
+
+        document.getElementById(
+            "welcomeText"
+        ).innerText =
+            "Welcome back, " +
+            user.name +
+            " 👋";
+
+    }
+
+
+    /* =====================================================
+       RESET DASHBOARD
+       
+       This is used when there is no active appointment.
+    ===================================================== */
+
+    function resetQueueDisplay() {
+
+        document.getElementById(
+            "token"
+        ).innerText = "—";
+
+
+        document.getElementById(
+            "bigToken"
+        ).innerText = "—";
+
+
+        document.getElementById(
+            "ahead"
+        ).innerText = "—";
+
+
+        document.getElementById(
+            "wait"
+        ).innerText = "—";
+
+
+        document.getElementById(
+            "status"
+        ).innerText = "No Appointment";
+
+
+        document.getElementById(
+            "queueAhead"
+        ).innerText = "—";
+
+
+        document.getElementById(
+            "queueWait"
+        ).innerText = "—";
+
+
+        document.getElementById(
+            "queueStatus"
+        ).innerText =
+            "No Appointment";
+
+
+        document.getElementById(
+            "queueDepartment"
+        ).innerText =
+            "No active appointment";
+
+    }
+
+
+    /* =====================================================
+       LOAD DASHBOARD
+    ===================================================== */
+
+    async function loadDashboard() {
+
+        if (!user) {
+            return;
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `${API}/patient/${user.id}`
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Unable to load patient data"
+                );
+
+            }
+
+
+            const data =
+                await response.json();
+
+
+            console.log(
+                "Patient data:",
+                data
+            );
+
+
+            /*
+             * Backend may return either:
+             *
+             * 1. An array of appointments
+             *
+             * OR
+             *
+             * 2. An object containing appointments.
+             */
+
+
+            let appointments = [];
+
+
+            if (Array.isArray(data)) {
+
+                appointments = data;
+
+            }
+
+            else {
+
+                appointments =
+                    data.appointments ||
+                    data.my_appointments ||
+                    [];
+
+            }
+
+
+            /*
+             * Find the ACTIVE appointment.
+             *
+             * Cancelled appointments must NOT
+             * be used for queue tracking.
+             *
+             * Completed appointments are also
+             * not considered active.
+             */
+
+            const activeAppointments =
+                appointments.filter(
+                    app => {
+
+                        const status =
+                            (
+                                app.status ||
+                                "waiting"
+                            ).toLowerCase();
+
+                        return (
+                            status !== "cancelled" &&
+                            status !== "completed"
+                        );
+
+                    }
+                );
+
+
+            /*
+             * Prefer today's active appointment.
+             *
+             * If the backend does not provide a date,
+             * use the first active appointment.
+             */
+
+            const today =
+                new Date()
+                    .toISOString()
+                    .split("T")[0];
+
+
+            let appointment =
+                activeAppointments.find(
+                    app => {
+
+                        const appDate =
+                            app.appointment_date ||
+                            app.date ||
+                            "";
+
+                        return appDate === today;
+
+                    }
+                );
+
+
+            if (!appointment) {
+
+                appointment =
+                    activeAppointments[0] ||
+                    null;
+
+            }
+
+
+            /* ================= ACTIVE APPOINTMENT ================= */
+
+            if (appointment) {
+
+                const token =
+                    appointment.token ??
+                    "—";
+
+
+                const ahead =
+                    appointment.patients_ahead ??
+                    appointment.ahead ??
+                    0;
+
+
+                const wait =
+                    appointment.waiting_minutes ??
+                    appointment.estimated_wait ??
+                    appointment.wait ??
+                    0;
+
+
+                const status =
+                    appointment.status ??
+                    "waiting";
+
+
+                const department =
+                    appointment.department ||
+                    "Hospital Appointment";
+
+
+                document.getElementById(
+                    "token"
+                ).innerText =
+                    token;
+
+
+                document.getElementById(
+                    "bigToken"
+                ).innerText =
+                    token;
+
+
+                document.getElementById(
+                    "ahead"
+                ).innerText =
+                    ahead;
+
+
+                document.getElementById(
+                    "wait"
+                ).innerText =
+                    wait + " min";
+
+
+                document.getElementById(
+                    "status"
+                ).innerText =
+                    status;
+
+
+                document.getElementById(
+                    "queueAhead"
+                ).innerText =
+                    ahead;
+
+
+                document.getElementById(
+                    "queueWait"
+                ).innerText =
+                    wait + " min";
+
+
+                document.getElementById(
+                    "queueStatus"
+                ).innerText =
+                    status;
+
+
+                document.getElementById(
+                    "queueDepartment"
+                ).innerText =
+                    department;
+
+            }
+
+            else {
+
+                /*
+                 * No active appointment.
+                 *
+                 * This also happens when the only
+                 * appointment was cancelled.
+                 */
+
+                resetQueueDisplay();
+
+            }
+
+
+            /*
+             * IMPORTANT:
+             *
+             * Send ALL appointments to the appointment
+             * section so cancelled appointments remain
+             * visible after refresh.
+             */
+
+            loadAppointments(
+                appointments
+            );
+
+        }
+
+        catch(error) {
+
+            console.log(
+                "Dashboard error:",
+                error
+            );
+
+
+            resetQueueDisplay();
+
+
+            document.getElementById(
+                "appointments"
+            ).innerHTML = `
+
+                <p style="color:#7890a7;">
+
+                    Unable to load appointment information.
+
+                </p>
+
+            `;
+
+        }
+
+    }
+
+
+    /* =====================================================
+       LOAD APPOINTMENTS
+    ===================================================== */
+
+    function loadAppointments(
+        appointments
+    ) {
+
+        const container =
+            document.getElementById(
+                "appointments"
+            );
+
+
+        if (
+            !appointments ||
+            !appointments.length
+        ) {
+
+            container.innerHTML = `
+
+                <div style="
+                    text-align:center;
+                    padding:30px;
+                    color:#7890a7;
+                ">
+
+                    <div style="
+                        font-size:40px;
+                    ">
+                        📅
+                    </div>
+
+                    <p style="
+                        margin-top:10px;
+                    ">
+
+                        You don't have any
+                        appointments yet.
+
+                    </p>
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        /*
+         * Show newest appointments first.
+         */
+
+        const sortedAppointments =
+            [...appointments].reverse();
+
+
+        container.innerHTML =
+            sortedAppointments
+                .map(
+                    app => {
+
+                        const status =
+                            (
+                                app.status ||
+                                "waiting"
+                            ).toLowerCase();
+
+
+                        const isCancelled =
+                            status === "cancelled";
+
+
+                        const isCompleted =
+                            status === "completed";
+
+
+                        const doctor =
+                            app.doctor ||
+                            "Doctor";
+
+
+                        const department =
+                            app.department ||
+                            "Department";
+
+
+                        const appointmentDate =
+                            app.appointment_date ||
+                            app.date ||
+                            "Today";
+
+
+                        const appointmentTime =
+                            app.planned_time ||
+                            app.time ||
+                            "Time pending";
+
+
+                        let actionHTML = "";
+
+
+                        if (isCancelled) {
+
+                            actionHTML = `
+
+                                <div>
+                                    <span
+                                        class="cancelled-status">
+
+                                        ❌ Cancelled
+
+                                    </span>
+                                </div>
+
+                            `;
+
+                        }
+
+                        else if (isCompleted) {
+
+                            actionHTML = `
+
+                                <div>
+                                    <span
+                                        style="
+                                            display:inline-block;
+                                            margin-left:15px;
+                                            margin-top:8px;
+                                            padding:7px 12px;
+                                            border-radius:20px;
+                                            background:#eaf5ff;
+                                            color:#1769aa;
+                                            font-size:12px;
+                                            font-weight:bold;
+                                        ">
+
+                                        ✓ Completed
+
+                                    </span>
+                                </div>
+
+                            `;
+
+                        }
+
+                        else {
+
+                            actionHTML = `
+
+                                <div>
+
+                                    <button
+                                        class="cancel-btn"
+                                        onclick="
+                                            cancelAppointment(
+                                                ${app.id}
+                                            )
+                                        ">
+
+                                        Cancel
+
+                                    </button>
+
+                                </div>
+
+                            `;
+
+                        }
+
+
+                        return `
+
+                            <div
+                                class="appointment">
+
+                                <div class="doctor">
+
+                                    <div
+                                        class="doctor-icon">
+
+                                        👨‍⚕️
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <h4>
+                                            ${doctor}
+                                        </h4>
+
+                                        <p>
+                                            ${department}
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div
+                                    class="appointment-time">
+
+                                    <strong>
+                                        ${appointmentDate}
+                                    </strong>
+
+                                    <span>
+                                        ${appointmentTime}
+                                    </span>
+
+                                    ${actionHTML}
+
+                                </div>
+
+                            </div>
+
+                        `;
+
+                    }
+                )
+                .join("");
+
+    }
+
+
+    /* =====================================================
+       CANCEL APPOINTMENT
+    ===================================================== */
+
+    async function cancelAppointment(
+        appointmentId
+    ) {
+
+        const confirmCancel =
+            confirm(
+                "Are you sure you want to cancel this appointment?"
+            );
+
+
+        if (!confirmCancel) {
+
+            return;
+
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `${API}/queue/${appointmentId}`,
+                    {
+
+                        method: "PUT",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            status: "cancelled"
+                        })
+
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                alert(
+                    data.detail ||
+                    "Unable to cancel appointment."
+                );
+
+                return;
+
+            }
+
+
+            alert(
+                "Appointment cancelled successfully."
+            );
+
+
+            /*
+             * Reload the dashboard.
+             *
+             * The appointment will still appear in
+             * My Appointments with ❌ Cancelled.
+             *
+             * It will NOT appear as an active queue
+             * appointment.
+             */
+
+            await loadDashboard();
+
+        }
+
+        catch(error) {
+
+            console.log(
+                "Cancellation error:",
+                error
+            );
+
+
+            alert(
+                "Unable to connect to the server."
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       AI RECOMMENDATION
+    ===================================================== */
+
+    async function loadRecommendation() {
+
+        try {
+
+            const department =
+                "Cardiology";
+
+
+            const today =
+                new Date()
+                    .toISOString()
+                    .split("T")[0];
+
+
+            const response =
+                await fetch(
+                    `${API}/recommendation?department=${department}&date=${today}`
+                );
+
+
+            if (!response.ok) {
+
+                document.getElementById(
+                    "recommendedTime"
+                ).innerText =
+                    "Available slots";
+
+                return;
+
+            }
+
+
+            const data =
+                await response.json();
+
+
+            const recommendations =
+                data.recommendations ||
+                data.slots ||
+                [];
+
+
+            if (
+                recommendations.length > 0
+            ) {
+
+                const first =
+                    recommendations[0];
+
+
+                const time =
+                    typeof first === "string"
+                        ? first
+                        : first.time ||
+                          first.slot ||
+                          "10:00 AM";
+
+
+                document.getElementById(
+                    "recommendedTime"
+                ).innerText =
+                    time;
+
+
+                document.getElementById(
+                    "recommendationText"
+                ).innerText =
+                    "AI predicts lower queue pressure for this slot.";
+
+            }
+
+            else {
+
+                document.getElementById(
+                    "recommendedTime"
+                ).innerText =
+                    "No slot";
+
+
+                document.getElementById(
+                    "recommendationText"
+                ).innerText =
+                    "No recommendation is available right now.";
+
+            }
+
+        }
+
+        catch(error) {
+
+            console.log(
+                "Recommendation error:",
+                error
+            );
+
+
+            document.getElementById(
+                "recommendedTime"
+            ).innerText =
+                "Available slots";
+
+
+            document.getElementById(
+                "recommendationText"
+            ).innerText =
+                "Recommendation service is currently unavailable.";
+
+        }
+
+    }
+
+
+    /* =====================================================
+       LOGOUT
+    ===================================================== */
+
+    function logout() {
+
+        /*
+         * Remove the current login session.
+         */
+
+        sessionStorage.removeItem(
+            "user"
+        );
+
+
+        /*
+         * Also remove old localStorage login
+         * if it exists from an earlier version.
+         */
+
+        localStorage.removeItem(
+            "user"
+        );
+
+
+        /*
+         * Go back to login page.
+         */
+
+        window.location.replace(
+            "login.html"
+        );
+
+    }
+
+
+    /* =====================================================
+       START DASHBOARD
+    ===================================================== */
+
+    loadDashboard();
+
+    loadRecommendation();
+
+
+    /*
+     * Refresh dashboard every 10 seconds.
+     *
+     * This allows token/queue information to
+     * update automatically.
+     */
+
+    setInterval(
+        loadDashboard,
+        10000
+    );
+
+
+</script>
+
+
+</body>
+
+</html>

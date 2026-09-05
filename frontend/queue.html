@@ -1,0 +1,170 @@
+<!doctype html>
+<html>
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width,initial-scale=1"
+    >
+
+    <title>Live Queue</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+
+<body class="dashboard">
+
+
+    <!-- ================================
+         TOP BAR
+    ================================= -->
+
+    <div class="topbar">
+
+        <h1>
+            🟢 Live Queue
+        </h1>
+
+        <a
+            class="btn"
+            href="book-appointment.html"
+        >
+            Book Appointment
+        </a>
+
+    </div>
+
+
+    <!-- ================================
+         QUEUE PANEL
+    ================================= -->
+
+    <div class="panel">
+
+        <h2 id="now">
+            Now Serving: —
+        </h2>
+
+        <div id="list"></div>
+
+    </div>
+
+
+    <!-- ================================
+         JAVASCRIPT
+    ================================= -->
+
+    <script>
+
+        async function load() {
+
+            try {
+
+                const response =
+                    await fetch(
+                        "http://127.0.0.1:8000/queue"
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                document.getElementById(
+                    "now"
+                ).textContent =
+                    "Now Serving: " +
+                    (
+                        data.now_serving ||
+                        "—"
+                    );
+
+
+                const queue =
+                    data.queue || [];
+
+
+                document.getElementById(
+                    "list"
+                ).innerHTML =
+
+                    queue.map(
+                        function (x) {
+
+                            return `
+
+                                <div class="row">
+
+                                    <b>
+                                        ${x.token}
+                                    </b>
+
+                                    <span>
+                                        ${x.status}
+                                    </span>
+
+                                    <span>
+                                        ${x.estimated_wait} min
+                                    </span>
+
+                                </div>
+
+                            `;
+
+                        }
+                    ).join("");
+
+            }
+
+
+            catch (error) {
+
+                console.error(
+                    "Queue loading error:",
+                    error
+                );
+
+
+                document.getElementById(
+                    "list"
+                ).innerHTML =
+
+                    `
+                    <p>
+                        Unable to load live queue.
+                        Please make sure the backend
+                        is running.
+                    </p>
+                    `;
+
+            }
+
+        }
+
+
+        // Load queue immediately
+
+        load();
+
+
+        // Refresh every 4 seconds
+
+        setInterval(
+            load,
+            4000
+        );
+
+    </script>
+
+
+</body>
+
+</html>

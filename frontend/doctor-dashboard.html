@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Doctor Dashboard - SmartCare AI</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <h1>👨‍⚕️ Doctor Dashboard</h1>
+
+    <p id="doctorInfo"></p>
+
+
+    <!-- =================================================
+         STATISTICS
+         ================================================= -->
+
+    <div class="dashboard-grid">
+
+        <div class="card">
+
+            <h3>⏳ Waiting</h3>
+
+            <h2 id="waitingCount">
+                0
+            </h2>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>🩺 In Progress</h3>
+
+            <h2 id="progressCount">
+                0
+            </h2>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>✅ Completed</h3>
+
+            <h2 id="completedCount">
+                0
+            </h2>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>👥 Total</h3>
+
+            <h2 id="totalCount">
+                0
+            </h2>
+
+        </div>
+
+    </div>
+
+
+    <!-- =================================================
+         QUEUE
+         ================================================= -->
+
+    <div class="card">
+
+        <h2>📋 Today's Queue</h2>
+
+        <div id="queueContainer"></div>
+
+    </div>
+
+
+    <button onclick="logout()">
+        🚪 Logout
+    </button>
+
+</div>
+
+
+<script>
+
+const API =
+    "http://127.0.0.1:8000";
+
+
+const user =
+    JSON.parse(
+        localStorage.getItem("user")
+    );
+
+
+if (
+    !user ||
+    user.role !== "doctor"
+) {
+
+    window.location.href =
+        "login.html";
+
+}
+
+
+document.getElementById(
+    "doctorInfo"
+).innerText =
+    `${user.name} • ${user.department}`;
+
+
+// =====================================================
+// LOAD DASHBOARD
+// =====================================================
+
+async function loadDashboard() {
+
+    try {
+
+        const response =
+            await fetch(
+                `${API}/doctor?department=${encodeURIComponent(user.department)}`
+            );
+
+
+        const data =
+            await response.json();
+
+
+        document.getElementById(
+            "waitingCount"
+        ).innerText =
+            data.waiting;
+
+
+        document.getElementById(
+            "progressCount"
+        ).innerText =
+            data.in_progress;
+
+
+        document.getElementById(
+            "completedCount"
+        ).innerText =
+            data.completed;
+
+
+        document.getElementById(
+            "totalCount"
+        ).innerText =
+            data.total;
+
+
+        renderQueue(
+            data.appointments
+        );
+
+
+    }
+    catch(error) {
+
+        console.error(error);
+
+    }
+
+}
+
+
+// =====================================================
+// RENDER QUEUE
+// =====================================================
+
+function renderQueue(
+    appointments
+) {
+
+    const container =
+        document.getElementById(
+            "queueContainer"
+        );
+
+
+    container.innerHTML = "";
+
+
+    if (appointments.length === 0) {
+
+        container.innerHTML =
+            "<p>No patients booked.</p>";
+
+        return;
+    }
+
+
+    appointments.forEach(
+        function(appointment) {
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+
+            div.className =
+                "card";
+
+
+            let statusText =
+                appointment.status;
+
+
+            if (
+                appointment.status ===
+                "waiting"
+            ) {
+
+                statusText =
+                    "⏳ Waiting";
+
+            }
+
+            else if (
+                appointment.status ===
+                "in_progress"
+            ) {
+
+                statusText =
+                    "🩺 In Progress";
+
+            }
+
+            else if (
+                appointment.status ===
+                "completed"
+            ) {
+
+                statusText =
+                    "✅ Completed";
+
+            }
+
+
+            let buttons = "";
+
+
+            // -----------------------------------------
+            // WAITING
+            // -----------------------------------------
+
+            if (
+                appointment.status ===
+                "waiting"
+            ) {
+
+                buttons = `
+
+                    <button
+                        onclick="startPatient(${appointment.id})"
+                    >
+                        ▶️ Start
+                    </button>
+
+                    <button
+                        onclick="cancelPatient(${appointment.id})"
+                    >
+                        ❌ Cancel
+                    </button>
+
+                `;
+
+            }
+
+
+            // -----------------------------------------
+            // IN PROGRESS
+            // -----------------------------------------
+
+            else if (
+                appointment.status ===
+                "in_progress"
+            ) {
+
+                buttons = `
+
+                    <button
+                        onclick="completePatient(${appointment.id})"
+                    >
+                        ✅ Complete
+                    </button>
+
+                `;
+
+            }
+
+
+            div.innerHTML = `
+
+                <h3>
+                    ${appointment.token}
+                    -
+                    ${appointment.patient_name}
+                </h3>
+
+                <p>
+                    <strong>Doctor:</strong>
+                    ${appointment.doctor}
+                </p>
+
+                <p>
+                    <strong>Planned Time:</strong>
+                    ${appointment.planned_time}
+                </p>
+
+                <p>
+                    <strong>Status:</strong>
+                    ${statusText}
+                </p>
+
+                <p>
+                    <strong>Delay:</strong>
+                    ${appointment.delay_minutes || 0}
+                    minutes
+                </p>
+
+                ${
+                    appointment.actual_start_time
+                    ?
+                    `
+                    <p>
+                        <strong>Started:</strong>
+                        ${appointment.actual_start_time}
+                    </p>
+                    `
+                    :
+                    ""
+                }
+
+                ${
+                    appointment.actual_end_time
+                    ?
+                    `
+                    <p>
+                        <strong>Finished:</strong>
+                        ${appointment.actual_end_time}
+                    </p>
+                    `
+                    :
+                    ""
+                }
+
+                ${
+                    appointment.status ===
+                    "completed"
+                    ?
+                    `
+                    <p>
+                        <strong>Actual Consultation:</strong>
+                        ${appointment.consultation_minutes}
+                        minutes
+                    </p>
+                    `
+                    :
+                    ""
+                }
+
+                <div>
+                    ${buttons}
+                </div>
+
+            `;
+
+
+            container.appendChild(
+                div
+            );
+
+        }
+    );
+
+}
+
+
+// =====================================================
+// START PATIENT
+// =====================================================
+
+async function startPatient(id) {
+
+    const confirmStart =
+        confirm(
+            "Start consultation for this patient?"
+        );
+
+
+    if (!confirmStart) {
+        return;
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                `${API}/queue/${id}`,
+                {
+
+                    method: "PUT",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        status:
+                            "in_progress"
+
+                    })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            alert(
+                data.detail ||
+                "Unable to start patient"
+            );
+
+            return;
+        }
+
+
+        loadDashboard();
+
+    }
+    catch(error) {
+
+        alert(
+            "Server error"
+        );
+
+    }
+
+}
+
+
+// =====================================================
+// COMPLETE PATIENT
+// =====================================================
+
+async function completePatient(id) {
+
+    const duration =
+        prompt(
+            "Enter actual consultation time in minutes:",
+            "10"
+        );
+
+
+    if (duration === null) {
+        return;
+    }
+
+
+    const minutes =
+        parseInt(duration);
+
+
+    if (
+        isNaN(minutes) ||
+        minutes <= 0
+    ) {
+
+        alert(
+            "Please enter a valid number of minutes."
+        );
+
+        return;
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                `${API}/queue/${id}`,
+                {
+
+                    method: "PUT",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        status:
+                            "completed",
+
+                        consultation_minutes:
+                            minutes
+
+                    })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            alert(
+                data.detail ||
+                "Unable to complete patient"
+            );
+
+            return;
+        }
+
+
+        loadDashboard();
+
+    }
+    catch(error) {
+
+        alert(
+            "Server error"
+        );
+
+    }
+
+}
+
+
+// =====================================================
+// CANCEL PATIENT
+// =====================================================
+
+async function cancelPatient(id) {
+
+    const confirmCancel =
+        confirm(
+            "Cancel this appointment?"
+        );
+
+
+    if (!confirmCancel) {
+        return;
+    }
+
+
+    try {
+
+        await fetch(
+            `${API}/queue/${id}`,
+            {
+
+                method: "PUT",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body: JSON.stringify({
+
+                    status:
+                        "cancelled"
+
+                })
+
+            }
+        );
+
+
+        loadDashboard();
+
+    }
+    catch(error) {
+
+        alert(
+            "Unable to cancel appointment"
+        );
+
+    }
+
+}
+
+
+// =====================================================
+// LOGOUT
+// =====================================================
+
+function logout() {
+
+    localStorage.removeItem(
+        "user"
+    );
+
+    window.location.href =
+        "login.html";
+
+}
+
+
+// =====================================================
+// INITIAL LOAD
+// =====================================================
+
+loadDashboard();
+
+
+// Refresh every 5 seconds
+
+setInterval(
+    loadDashboard,
+    5000
+);
+
+</script>
+
+</body>
+
+</html>

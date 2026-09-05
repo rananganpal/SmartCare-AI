@@ -1,0 +1,1 @@
+document.addEventListener("DOMContentLoaded",()=>{const date=document.querySelector("#date");if(date){date.min=new Date().toISOString().split("T")[0]}});

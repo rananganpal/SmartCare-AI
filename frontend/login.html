@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Login - SmartCare AI</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            min-height: 100vh;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #eaf7ff,
+                    #f8fcff,
+                    #e8f8f5
+                );
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            color: #173f60;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 430px;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: white;
+
+            padding: 40px;
+
+            border-radius: 22px;
+
+            border: 1px solid #dcecf7;
+
+            box-shadow:
+                0 20px 60px rgba(
+                    20,
+                    70,
+                    100,
+                    0.14
+                );
+        }
+
+        .logo {
+            text-align: center;
+
+            font-size: 25px;
+
+            font-weight: 800;
+
+            margin-bottom: 30px;
+
+            color: #1261a0;
+        }
+
+        .logo span {
+            color: #19a7a8;
+        }
+
+        .logo-icon {
+            display: block;
+
+            font-size: 42px;
+
+            margin-bottom: 8px;
+        }
+
+        h1 {
+            text-align: center;
+
+            font-size: 34px;
+
+            color: #123f68;
+
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            text-align: center;
+
+            color: #718798;
+
+            font-size: 15px;
+
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+
+            color: #34566f;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+
+            height: 48px;
+
+            padding: 0 14px;
+
+            border: 1px solid #cbddea;
+
+            border-radius: 9px;
+
+            background: #f9fcff;
+
+            font-size: 15px;
+
+            color: #183b57;
+
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #1261a0;
+
+            background: white;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(18, 97, 160, 0.10);
+        }
+
+        .login-btn {
+            width: 100%;
+
+            height: 50px;
+
+            border: none;
+
+            border-radius: 9px;
+
+            background: #1261a0;
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+        .login-btn:hover {
+            background: #0c4f85;
+
+            transform: translateY(-1px);
+        }
+
+        #message {
+            min-height: 22px;
+
+            text-align: center;
+
+            margin-bottom: 10px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+        }
+
+        .success {
+            color: #16804f;
+        }
+
+        .error {
+            color: #c0392b;
+        }
+
+        .bottom {
+            text-align: center;
+
+            margin-top: 25px;
+
+            color: #718798;
+
+            font-size: 14px;
+        }
+
+        .bottom a {
+            color: #1261a0;
+
+            font-weight: 700;
+
+            text-decoration: none;
+        }
+
+        .bottom a:hover {
+            text-decoration: underline;
+        }
+
+        .home {
+            display: inline-block;
+
+            margin-top: 14px;
+        }
+
+        @media (max-width: 500px) {
+
+            .login-card {
+                padding: 30px 22px;
+            }
+
+            h1 {
+                font-size: 29px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <div class="login-container">
+
+        <div class="login-card">
+
+            <div class="logo">
+
+                <span class="logo-icon">🏥</span>
+
+                SmartCare <span>AI</span>
+
+            </div>
+
+
+            <h1>
+                Welcome Back
+            </h1>
+
+            <p class="subtitle">
+                Access your SmartCare dashboard
+            </p>
+
+
+            <form id="loginForm">
+
+                <div class="form-group">
+
+                    <label for="email">
+                        Email Address
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="you@example.com"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Enter your password"
+                        required
+                    >
+
+                </div>
+
+
+                <div id="message"></div>
+
+
+                <button
+                    type="submit"
+                    class="login-btn"
+                >
+                    Login
+                </button>
+
+            </form>
+
+
+            <div class="bottom">
+
+                <p>
+                    New user?
+
+                    <a href="register.html">
+                        Create account
+                    </a>
+                </p>
+
+
+                <a
+                    href="index.html"
+                    class="home"
+                >
+                    ← Back to Home
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        const API =
+            "http://127.0.0.1:8000";
+
+
+        /*
+         * IMPORTANT:
+         *
+         * Remove any old login session.
+         *
+         * We use sessionStorage instead of
+         * localStorage so the login session
+         * belongs only to this browser tab.
+         */
+
+        localStorage.removeItem("user");
+
+
+        /*
+         * If the login page is opened after logout,
+         * replace the current history entry.
+         *
+         * This prevents the login page from creating
+         * unwanted history entries.
+         */
+
+
+        document
+            .getElementById("loginForm")
+            .addEventListener(
+                "submit",
+                async function(event) {
+
+                    event.preventDefault();
+
+
+                    const email =
+                        document
+                            .getElementById("email")
+                            .value
+                            .trim();
+
+
+                    const password =
+                        document
+                            .getElementById("password")
+                            .value;
+
+
+                    const message =
+                        document
+                            .getElementById("message");
+
+
+                    const loginButton =
+                        document.querySelector(
+                            ".login-btn"
+                        );
+
+
+                    loginButton.disabled =
+                        true;
+
+
+                    loginButton.textContent =
+                        "Logging in...";
+
+
+                    try {
+
+                        const response =
+                            await fetch(
+                                API + "/login",
+                                {
+                                    method: "POST",
+
+                                    headers: {
+                                        "Content-Type":
+                                            "application/json"
+                                    },
+
+                                    body:
+                                        JSON.stringify({
+                                            email:
+                                                email,
+
+                                            password:
+                                                password
+                                        })
+                                }
+                            );
+
+
+                        const data =
+                            await response.json();
+
+
+                        if (!response.ok) {
+
+                            throw new Error(
+                                data.detail ||
+                                "Login failed"
+                            );
+
+                        }
+
+
+                        /*
+                         * IMPORTANT:
+                         *
+                         * Store the user ONLY in
+                         * sessionStorage.
+                         *
+                         * Do NOT use localStorage.
+                         */
+
+                        sessionStorage.setItem(
+                            "user",
+                            JSON.stringify(
+                                data.user
+                            )
+                        );
+
+
+                        /*
+                         * Make sure an old localStorage
+                         * session can never remain.
+                         */
+
+                        localStorage.removeItem(
+                            "user"
+                        );
+
+
+                        message.className =
+                            "success";
+
+
+                        message.textContent =
+                            "Login successful!";
+
+
+                        /*
+                         * Small delay so the user
+                         * can see the success message.
+                         */
+
+                        setTimeout(
+                            function() {
+
+                                if (
+                                    data.user.role ===
+                                    "patient"
+                                ) {
+
+                                    /*
+                                     * replace() instead of
+                                     * href prevents the
+                                     * login page from being
+                                     * added unnecessarily
+                                     * to browser history.
+                                     */
+
+                                    window.location.replace(
+                                        "patient-dashboard.html"
+                                    );
+
+                                }
+
+
+                                else if (
+                                    data.user.role ===
+                                    "doctor"
+                                ) {
+
+                                    window.location.replace(
+                                        "doctor-dashboard.html"
+                                    );
+
+                                }
+
+
+                                else if (
+                                    data.user.role ===
+                                    "admin"
+                                ) {
+
+                                    window.location.replace(
+                                        "admin-dashboard.html"
+                                    );
+
+                                }
+
+                            },
+                            500
+                        );
+
+
+                    }
+
+                    catch(error) {
+
+                        message.className =
+                            "error";
+
+
+                        message.textContent =
+                            error.message;
+
+
+                        loginButton.disabled =
+                            false;
+
+
+                        loginButton.textContent =
+                            "Login";
+
+                    }
+
+                }
+            );
+
+
+        /*
+         * Prevent the browser from showing an old
+         * protected page from the back-forward cache
+         * when the login page is reached after logout.
+         */
+
+        window.addEventListener(
+            "pageshow",
+            function(event) {
+
+                if (
+                    event.persisted
+                ) {
+
+                    window.location.reload();
+
+                }
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>
