@@ -1235,8 +1235,12 @@
     <script>
 
 
+// =====================================================
+// PUBLIC RENDER BACKEND
+// =====================================================
+
 const API =
-    "http://127.0.0.1:8000";
+    "https://smartcare-ai-oqq2.onrender.com";
 
 
 // =====================================================
@@ -1522,7 +1526,6 @@ date.addEventListener(
         selectedTime.value =
             "";
 
-
         loadRecommendation();
 
     }
@@ -1612,7 +1615,7 @@ async function loadRecommendation() {
 
             catch (e) {
 
-                // Ignore JSON error
+                // Ignore JSON parsing error
 
             }
 
@@ -1720,7 +1723,7 @@ async function loadRecommendation() {
                 font-weight:600;
                 padding:10px 0;
             ">
-                ⚠️ ${error.message}
+                ⚠️ Failed to fetch recommendation
             </div>
 
             <div style="
@@ -1728,8 +1731,7 @@ async function loadRecommendation() {
                 font-size:13px;
                 margin-top:5px;
             ">
-                Make sure SmartCare backend is running on
-                http://127.0.0.1:8000
+                Please try again in a few seconds.
             </div>
             `;
 
@@ -2064,6 +2066,7 @@ async function loadTokenTracking() {
                 function (appointment) {
 
                     return (
+
                         appointment.status !==
                             "cancelled"
 
@@ -2071,6 +2074,7 @@ async function loadTokenTracking() {
 
                         appointment.status !==
                             "completed"
+
                     );
 
                 }
@@ -2078,7 +2082,7 @@ async function loadTokenTracking() {
 
 
         /*
-         * If the patient has cancelled the appointment,
+         * If the patient has no active appointment,
          * token tracking is hidden.
          */
 
@@ -2337,37 +2341,27 @@ function logout() {
 
 
 // =====================================================
-// LEAVE PAGE CHECK
+// PAGE LEAVE
 // =====================================================
 
 /*
- * We do NOT logout when changing between
- * SmartCare pages.
+ * We intentionally do not logout here.
  *
- * We only remove the session when the page
- * is being unloaded and the destination is
- * outside the SmartCare website.
+ * sessionStorage is automatically cleared when
+ * the browser tab/session ends.
  */
 
 window.addEventListener(
     "pagehide",
     function () {
 
-        /*
-         * Do nothing here.
-         *
-         * Browser/tab closing is handled by
-         * sessionStorage automatically.
-         *
-         * This prevents logout when moving
-         * between book-appointment.html,
-         * queue.html, etc.
-         */
+        // Do nothing.
 
     }
 );
 
-</script>
+
+    </script>
 
 
 </body>
