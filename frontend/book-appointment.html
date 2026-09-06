@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -226,17 +227,16 @@
 
 
         input,
-        select {
+        select,
+        textarea {
 
             width: 100%;
-
-            height: 47px;
 
             border: 1px solid #cbddea;
 
             border-radius: 9px;
 
-            padding: 0 13px;
+            padding: 12px 13px;
 
             background: #f9fcff;
 
@@ -245,11 +245,32 @@
             font-size: 14px;
 
             outline: none;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+        }
+
+
+        input,
+        select {
+
+            height: 47px;
+        }
+
+
+        textarea {
+
+            min-height: 100px;
+
+            resize: vertical;
         }
 
 
         input:focus,
-        select:focus {
+        select:focus,
+        textarea:focus {
 
             border-color: #1261a0;
 
@@ -708,6 +729,295 @@
 
 
         /* ================================
+           EMERGENCY SUPPORT
+        ================================= */
+
+        .emergency-card {
+
+            margin-top: 25px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #fff8f6,
+                    #fffdfc
+                );
+
+            border: 1px solid #f1cfc8;
+
+            border-radius: 18px;
+
+            padding: 25px;
+
+            box-shadow:
+                0 12px 35px
+                rgba(150, 70, 60, 0.07);
+        }
+
+
+        .emergency-header {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            margin-bottom: 8px;
+        }
+
+
+        .emergency-icon {
+
+            width: 42px;
+
+            height: 42px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background: #fff0ed;
+
+            border-radius: 10px;
+
+            font-size: 22px;
+        }
+
+
+        .emergency-header h2 {
+
+            color: #9e3025;
+
+            margin: 0;
+
+            font-size: 21px;
+        }
+
+
+        .emergency-description {
+
+            color: #6f777c;
+
+            font-size: 13px;
+
+            line-height: 1.6;
+
+            margin-bottom: 20px;
+        }
+
+
+        .emergency-btn {
+
+            width: 100%;
+
+            min-height: 50px;
+
+            border: none;
+
+            border-radius: 9px;
+
+            background: #c0392b;
+
+            color: white;
+
+            font-size: 15px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+
+        .emergency-btn:hover {
+
+            background: #a93226;
+
+            transform: translateY(-1px);
+        }
+
+
+        .emergency-btn:disabled {
+
+            background: #c9a09b;
+
+            cursor: not-allowed;
+
+            transform: none;
+        }
+
+
+        .emergency-message {
+
+            min-height: 22px;
+
+            margin-top: 12px;
+
+            text-align: center;
+
+            font-size: 13px;
+
+            font-weight: 700;
+        }
+
+
+        .emergency-warning {
+
+            margin-top: 15px;
+
+            padding: 13px;
+
+            border-radius: 9px;
+
+            background: #fff4e8;
+
+            border: 1px solid #f0d4b0;
+
+            color: #795a35;
+
+            font-size: 12px;
+
+            line-height: 1.5;
+        }
+
+
+        /* ================================
+           EMERGENCY REQUEST LIST
+        ================================= */
+
+        .emergency-list {
+
+            display: none;
+
+            margin-top: 20px;
+        }
+
+
+        .emergency-list h3 {
+
+            color: #9e3025;
+
+            font-size: 17px;
+
+            margin-bottom: 12px;
+        }
+
+
+        .emergency-item {
+
+            background: white;
+
+            border: 1px solid #eadbd8;
+
+            border-radius: 11px;
+
+            padding: 15px;
+
+            margin-bottom: 10px;
+        }
+
+
+        .emergency-item-top {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            gap: 10px;
+
+            align-items: center;
+
+            margin-bottom: 8px;
+        }
+
+
+        .emergency-token {
+
+            font-weight: 800;
+
+            color: #1261a0;
+
+            font-size: 15px;
+        }
+
+
+        .emergency-type {
+
+            color: #4d6370;
+
+            font-size: 13px;
+
+            font-weight: 700;
+        }
+
+
+        .emergency-item p {
+
+            color: #6f777c;
+
+            font-size: 12px;
+
+            line-height: 1.5;
+
+            margin: 4px 0;
+        }
+
+
+        .emergency-status {
+
+            display: inline-block;
+
+            margin-top: 7px;
+
+            padding: 5px 9px;
+
+            border-radius: 6px;
+
+            background: #eef8ff;
+
+            color: #1261a0;
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            text-transform: capitalize;
+        }
+
+
+        .emergency-cancel-btn {
+
+            margin-top: 10px;
+
+            border: 1px solid #e0aaa4;
+
+            background: #fff4f2;
+
+            color: #b4382d;
+
+            border-radius: 7px;
+
+            padding: 7px 12px;
+
+            cursor: pointer;
+
+            font-size: 12px;
+
+            font-weight: 700;
+        }
+
+
+        .emergency-cancel-btn:hover {
+
+            background: #ffe8e4;
+        }
+
+
+        /* ================================
            MOBILE
         ================================= */
 
@@ -748,7 +1058,8 @@
 
 
             .card,
-            .info-card {
+            .info-card,
+            .emergency-card {
 
                 padding: 22px;
             }
@@ -757,6 +1068,14 @@
             .tracking-grid {
 
                 grid-template-columns: 1fr;
+            }
+
+
+            .emergency-item-top {
+
+                align-items: flex-start;
+
+                flex-direction: column;
             }
 
         }
@@ -1120,6 +1439,231 @@
                 </div>
 
 
+                <!-- ============================
+                     EMERGENCY SUPPORT
+                ============================= -->
+
+                <div class="emergency-card">
+
+                    <div class="emergency-header">
+
+                        <div class="emergency-icon">
+                            🚨
+                        </div>
+
+                        <h2>
+                            Emergency Support
+                        </h2>
+
+                    </div>
+
+
+                    <p class="emergency-description">
+
+                        If you are experiencing an urgent medical situation,
+                        submit an emergency request so hospital staff can
+                        review and respond to it through the emergency queue.
+
+                    </p>
+
+
+                    <div class="form-group">
+
+                        <label for="emergencyType">
+                            Emergency Type
+                        </label>
+
+                        <select id="emergencyType">
+
+                            <option value="">
+                                Select Emergency Type
+                            </option>
+
+                            <option value="Breathing difficulty">
+                                Breathing difficulty
+                            </option>
+
+                            <option value="Chest pain">
+                                Chest pain
+                            </option>
+
+                            <option value="Severe bleeding">
+                                Severe bleeding
+                            </option>
+
+                            <option value="Accident / injury">
+                                Accident / injury
+                            </option>
+
+                            <option value="Loss of consciousness">
+                                Loss of consciousness
+                            </option>
+
+                            <option value="Severe pain">
+                                Severe pain
+                            </option>
+
+                            <option value="Other emergency">
+                                Other emergency
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="emergencyDepartment">
+                            Department
+                        </label>
+
+                        <select id="emergencyDepartment">
+
+                            <option value="">
+                                Select Department
+                            </option>
+
+                            <option value="Cardiology">
+                                Cardiology
+                            </option>
+
+                            <option value="Orthopedics">
+                                Orthopedics
+                            </option>
+
+                            <option value="Dermatology">
+                                Dermatology
+                            </option>
+
+                            <option value="Neurology">
+                                Neurology
+                            </option>
+
+                            <option value="Ophthalmology">
+                                Ophthalmology
+                            </option>
+
+                            <option value="ENT">
+                                ENT
+                            </option>
+
+                            <option value="General Medicine">
+                                General Medicine
+                            </option>
+
+                            <option value="Pediatrics">
+                                Pediatrics
+                            </option>
+
+                            <option value="Gynecology">
+                                Gynecology
+                            </option>
+
+                            <option value="Dental">
+                                Dental
+                            </option>
+
+                            <option value="Pulmonology">
+                                Pulmonology
+                            </option>
+
+                            <option value="Oncology">
+                                Oncology
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="emergencyDescription">
+                            Describe the Emergency
+                        </label>
+
+                        <textarea
+                            id="emergencyDescription"
+                            placeholder="Briefly describe what is happening..."
+                        ></textarea>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="emergencyLocation">
+                            Current Location
+                        </label>
+
+                        <input
+                            type="text"
+                            id="emergencyLocation"
+                            placeholder="Enter your current location"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="emergencyContact">
+                            Emergency Contact
+                        </label>
+
+                        <input
+                            type="text"
+                            id="emergencyContact"
+                            placeholder="Enter emergency contact number"
+                        >
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="emergency-btn"
+                        id="emergencyButton"
+                        onclick="submitEmergency()"
+                    >
+                        🚨 Submit Emergency Request
+                    </button>
+
+
+                    <div
+                        class="emergency-message"
+                        id="emergencyMessage"
+                    ></div>
+
+
+                    <div class="emergency-warning">
+
+                        ⚠️ SmartCare AI provides workflow support only.
+                        It does not diagnose medical conditions or automatically
+                        make clinical decisions. For a life-threatening emergency,
+                        contact your local emergency services immediately.
+
+                    </div>
+
+
+                    <div
+                        class="emergency-list"
+                        id="emergencyList"
+                    >
+
+                        <h3>
+                            🚨 My Emergency Requests
+                        </h3>
+
+                        <div id="emergencyItems">
+                        </div>
+
+                    </div>
+
+                </div>
+
+
             </div>
 
 
@@ -1217,6 +1761,29 @@
                             Track your token and current
                             queue position while your
                             appointment is active.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <div class="info-icon">
+                        🚨
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Emergency Support
+                        </h3>
+
+                        <p>
+                            Submit an emergency request for
+                            hospital staff to review through
+                            the emergency workflow.
                         </p>
 
                     </div>
@@ -2293,8 +2860,7 @@ function formatStatus(status) {
 
 
     return formatted
-        .charAt(0)
-        .toUpperCase()
+        .charAt(0).toUpperCase()
         +
         formatted.slice(1);
 
@@ -2316,6 +2882,611 @@ setInterval(
 // =====================================================
 
 loadTokenTracking();
+
+
+// =====================================================
+// EMERGENCY ELEMENTS
+// =====================================================
+
+const emergencyType =
+    document.getElementById(
+        "emergencyType"
+    );
+
+
+const emergencyDepartment =
+    document.getElementById(
+        "emergencyDepartment"
+    );
+
+
+const emergencyDescription =
+    document.getElementById(
+        "emergencyDescription"
+    );
+
+
+const emergencyLocation =
+    document.getElementById(
+        "emergencyLocation"
+    );
+
+
+const emergencyContact =
+    document.getElementById(
+        "emergencyContact"
+    );
+
+
+const emergencyButton =
+    document.getElementById(
+        "emergencyButton"
+    );
+
+
+const emergencyMessage =
+    document.getElementById(
+        "emergencyMessage"
+    );
+
+
+const emergencyList =
+    document.getElementById(
+        "emergencyList"
+    );
+
+
+const emergencyItems =
+    document.getElementById(
+        "emergencyItems"
+    );
+
+
+// =====================================================
+// SUBMIT EMERGENCY REQUEST
+// =====================================================
+
+async function submitEmergency() {
+
+    emergencyMessage.className =
+        "emergency-message";
+
+
+    emergencyMessage.textContent =
+        "";
+
+
+    if (!emergencyType.value) {
+
+        emergencyMessage.className =
+            "emergency-message error";
+
+
+        emergencyMessage.textContent =
+            "Please select the emergency type.";
+
+
+        return;
+
+    }
+
+
+    if (!emergencyDepartment.value) {
+
+        emergencyMessage.className =
+            "emergency-message error";
+
+
+        emergencyMessage.textContent =
+            "Please select a department.";
+
+
+        return;
+
+    }
+
+
+    if (!emergencyDescription.value.trim()) {
+
+        emergencyMessage.className =
+            "emergency-message error";
+
+
+        emergencyMessage.textContent =
+            "Please describe the emergency.";
+
+
+        return;
+
+    }
+
+
+    if (!emergencyLocation.value.trim()) {
+
+        emergencyMessage.className =
+            "emergency-message error";
+
+
+        emergencyMessage.textContent =
+            "Please enter your current location.";
+
+
+        return;
+
+    }
+
+
+    emergencyButton.disabled =
+        true;
+
+
+    emergencyButton.textContent =
+        "Submitting Emergency Request...";
+
+
+    try {
+
+        const emergencyData = {
+
+            patient_id:
+                user.id,
+
+            patient_name:
+                user.name || "",
+
+            emergency_type:
+                emergencyType.value,
+
+            department:
+                emergencyDepartment.value,
+
+            description:
+                emergencyDescription.value.trim(),
+
+            location:
+                emergencyLocation.value.trim(),
+
+            emergency_contact:
+                emergencyContact.value.trim()
+
+        };
+
+
+        console.log(
+            "Emergency request:",
+            emergencyData
+        );
+
+
+        const response =
+            await fetch(
+                `${API}/emergency`,
+                {
+
+                    method:
+                        "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify(
+                            emergencyData
+                        )
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Emergency response:",
+            data
+        );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.detail ||
+                "Emergency request could not be submitted."
+            );
+
+        }
+
+
+        emergencyMessage.className =
+            "emergency-message success";
+
+
+        emergencyMessage.textContent =
+
+            "Emergency request submitted successfully. " +
+            "Your emergency token is " +
+            (
+                data.emergency?.token ||
+                data.token ||
+                "--"
+            ) +
+            ".";
+
+
+        emergencyDescription.value =
+            "";
+
+
+        emergencyLocation.value =
+            "";
+
+
+        emergencyContact.value =
+            "";
+
+
+        await loadEmergencyRequests();
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "Emergency request error:",
+            error
+        );
+
+
+        emergencyMessage.className =
+            "emergency-message error";
+
+
+        emergencyMessage.textContent =
+            error.message;
+
+    }
+
+
+    finally {
+
+        emergencyButton.disabled =
+            false;
+
+
+        emergencyButton.textContent =
+            "🚨 Submit Emergency Request";
+
+    }
+
+}
+
+
+// =====================================================
+// LOAD MY EMERGENCY REQUESTS
+// =====================================================
+
+async function loadEmergencyRequests() {
+
+    try {
+
+        const response =
+            await fetch(
+                `${API}/emergency/patient/${user.id}`
+            );
+
+
+        if (!response.ok) {
+
+            emergencyList.style.display =
+                "none";
+
+            return;
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        const emergencies =
+            Array.isArray(data)
+                ? data
+                : (
+                    data.emergencies ||
+                    data.requests ||
+                    []
+                );
+
+
+        if (!emergencies.length) {
+
+            emergencyList.style.display =
+                "none";
+
+            emergencyItems.innerHTML =
+                "";
+
+            return;
+
+        }
+
+
+        emergencyList.style.display =
+            "block";
+
+
+        let html =
+            "";
+
+
+        emergencies.forEach(
+            function (emergency) {
+
+                const token =
+                    emergency.token ||
+                    "--";
+
+
+                const type =
+                    emergency.emergency_type ||
+                    "Emergency";
+
+
+                const status =
+                    emergency.status ||
+                    "requested";
+
+
+                const description =
+                    emergency.description ||
+                    "No description";
+
+
+                const departmentName =
+                    emergency.department ||
+                    emergencyDepartment.value ||
+                    "Hospital";
+
+
+                const isActive =
+                    status !==
+                        "cancelled"
+                    &&
+                    status !==
+                        "resolved";
+
+
+                html += `
+
+                    <div class="emergency-item">
+
+                        <div class="emergency-item-top">
+
+                            <div>
+
+                                <div class="emergency-token">
+                                    🎫 ${escapeHtml(token)}
+                                </div>
+
+                                <div class="emergency-type">
+                                    ${escapeHtml(type)}
+                                </div>
+
+                            </div>
+
+                            <span class="emergency-status">
+                                ${escapeHtml(
+                                    formatStatus(status)
+                                )}
+                            </span>
+
+                        </div>
+
+
+                        <p>
+                            <strong>Department:</strong>
+                            ${escapeHtml(departmentName)}
+                        </p>
+
+
+                        <p>
+                            <strong>Description:</strong>
+                            ${escapeHtml(description)}
+                        </p>
+
+
+                        ${
+                            isActive
+                                ? `
+                                    <button
+                                        type="button"
+                                        class="emergency-cancel-btn"
+                                        onclick="cancelEmergency(${emergency.id})"
+                                    >
+                                        Cancel Emergency Request
+                                    </button>
+                                  `
+                                : ""
+                        }
+
+                    </div>
+
+                `;
+
+            }
+        );
+
+
+        emergencyItems.innerHTML =
+            html;
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "Emergency list error:",
+            error
+        );
+
+    }
+
+}
+
+
+// =====================================================
+// CANCEL EMERGENCY REQUEST
+// =====================================================
+
+async function cancelEmergency(
+    emergencyId
+) {
+
+    const confirmed =
+        confirm(
+            "Are you sure you want to cancel this emergency request?"
+        );
+
+
+    if (!confirmed) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                `${API}/emergency/${emergencyId}`,
+                {
+
+                    method:
+                        "PUT",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            status:
+                                "cancelled"
+
+                        })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.detail ||
+                "Unable to cancel emergency request."
+            );
+
+        }
+
+
+        emergencyMessage.className =
+            "emergency-message success";
+
+
+        emergencyMessage.textContent =
+            "Emergency request cancelled successfully.";
+
+
+        await loadEmergencyRequests();
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "Emergency cancellation error:",
+            error
+        );
+
+
+        emergencyMessage.className =
+            "emergency-message error";
+
+
+        emergencyMessage.textContent =
+            error.message;
+
+    }
+
+}
+
+
+// =====================================================
+// HTML ESCAPE
+// =====================================================
+
+function escapeHtml(value) {
+
+    return String(
+        value ?? ""
+    )
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+// =====================================================
+// EMERGENCY REFRESH
+// =====================================================
+
+setInterval(
+    loadEmergencyRequests,
+    10000
+);
+
+
+// =====================================================
+// INITIAL EMERGENCY LOAD
+// =====================================================
+
+loadEmergencyRequests();
 
 
 // =====================================================
@@ -2367,3 +3538,4 @@ window.addEventListener(
 </body>
 
 </html>
+```

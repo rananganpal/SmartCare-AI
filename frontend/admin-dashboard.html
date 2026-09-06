@@ -1,1 +1,886 @@
-<!doctype html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin Dashboard</title><link rel="stylesheet" href="style.css"></head><body class="dashboard"><div class="topbar"><div><div class="logo">🏥 SmartCare <span>AI</span></div><h1>Hospital Admin Dashboard</h1></div><button class="btn" onclick="logout()">Logout</button></div><div class="cards"><div class="stat"><small>Patients</small><b id="patients">—</b></div><div class="stat"><small>Appointments</small><b id="appointments">—</b></div><div class="stat"><small>Waiting</small><b id="waiting">—</b></div><div class="stat"><small>Avg. Wait</small><b id="avg">—</b></div></div><div class="panel"><h2>📊 Department Analytics</h2><div id="dept"></div></div><div class="panel"><h2>💡 Optimization Insight</h2><div class="notice">Use peak-hour forecasts to distribute appointments across lower-load slots and reduce queue pressure.</div></div><script>const u=JSON.parse(localStorage.getItem('user')||'null');if(!u||u.role!=='admin')location.href='login.html';async function load(){let r=await fetch('https://smartcare-ai-oqq2.onrender.com/admin/analytics');let d=await r.json();patients.textContent=d.patients;appointments.textContent=d.appointments;waiting.textContent=d.waiting;avg.textContent=d.avg_wait+' min';dept.innerHTML=d.departments.map(x=>`<div class="row"><b>${x.department}</b><span>${x.count} appointments</span><span>Avg wait ${x.avg_wait} min</span></div>`).join('')}function logout(){localStorage.removeItem('user');location.href='login.html'}load();</script></body></html>
+```html
+<!doctype html>
+
+<html>
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width,initial-scale=1"
+    >
+
+    <title>Admin Dashboard</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+
+<body class="dashboard">
+
+
+<div class="topbar">
+
+    <div>
+
+        <div class="logo">
+            🏥 SmartCare <span>AI</span>
+        </div>
+
+        <h1>
+            Hospital Admin Dashboard
+        </h1>
+
+    </div>
+
+
+    <button
+        class="btn"
+        onclick="logout()"
+    >
+        Logout
+    </button>
+
+</div>
+
+
+<!-- =====================================================
+     EXISTING STATISTICS
+     ===================================================== -->
+
+<div class="cards">
+
+
+    <div class="stat">
+
+        <small>
+            Patients
+        </small>
+
+        <b id="patients">
+            —
+        </b>
+
+    </div>
+
+
+    <div class="stat">
+
+        <small>
+            Appointments
+        </small>
+
+        <b id="appointments">
+            —
+        </b>
+
+    </div>
+
+
+    <div class="stat">
+
+        <small>
+            Waiting
+        </small>
+
+        <b id="waiting">
+            —
+        </b>
+
+    </div>
+
+
+    <div class="stat">
+
+        <small>
+            Avg. Wait
+        </small>
+
+        <b id="avg">
+            —
+        </b>
+
+    </div>
+
+
+</div>
+
+
+<!-- =====================================================
+     EXISTING DEPARTMENT ANALYTICS
+     ===================================================== -->
+
+<div class="panel">
+
+    <h2>
+        📊 Department Analytics
+    </h2>
+
+    <div id="dept"></div>
+
+</div>
+
+
+<!-- =====================================================
+     EXISTING OPTIMIZATION INSIGHT
+     ===================================================== -->
+
+<div class="panel">
+
+    <h2>
+        💡 Optimization Insight
+    </h2>
+
+    <div class="notice">
+
+        Use peak-hour forecasts to distribute appointments
+        across lower-load slots and reduce queue pressure.
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     EMERGENCY MANAGEMENT
+     ===================================================== -->
+
+<div class="panel">
+
+    <h2>
+        🚨 Emergency Management
+    </h2>
+
+
+    <div class="cards">
+
+
+        <div class="stat">
+
+            <small>
+                Total Emergencies
+            </small>
+
+            <b id="totalEmergencies">
+                —
+            </b>
+
+        </div>
+
+
+        <div class="stat">
+
+            <small>
+                Active
+            </small>
+
+            <b id="activeEmergencies">
+                —
+            </b>
+
+        </div>
+
+
+        <div class="stat">
+
+            <small>
+                Resolved
+            </small>
+
+            <b id="resolvedEmergencies">
+                —
+            </b>
+
+        </div>
+
+
+        <div class="stat">
+
+            <small>
+                Avg. Response
+            </small>
+
+            <b id="avgEmergencyResponse">
+                —
+            </b>
+
+        </div>
+
+
+    </div>
+
+
+    <div
+        id="emergencyContainer"
+        style="margin-top:20px;"
+    >
+
+        <p>
+            Loading emergency requests...
+        </p>
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+
+// =====================================================
+// API
+// =====================================================
+
+const API =
+    "https://smartcare-ai-oqq2.onrender.com";
+
+
+// =====================================================
+// ADMIN LOGIN CHECK
+// =====================================================
+
+const u =
+    JSON.parse(
+        localStorage.getItem(
+            "user"
+        ) || "null"
+    );
+
+
+if (
+    !u ||
+    u.role !== "admin"
+) {
+
+    location.href =
+        "login.html";
+
+}
+
+
+// =====================================================
+// LOAD NORMAL ANALYTICS
+// =====================================================
+
+async function load() {
+
+    try {
+
+        let r =
+            await fetch(
+                `${API}/admin/analytics`
+            );
+
+
+        let d =
+            await r.json();
+
+
+        patients.textContent =
+            d.patients;
+
+
+        appointments.textContent =
+            d.appointments;
+
+
+        waiting.textContent =
+            d.waiting;
+
+
+        avg.textContent =
+            d.avg_wait +
+            " min";
+
+
+        dept.innerHTML =
+            d.departments
+                .map(
+                    x => `
+
+                        <div class="row">
+
+                            <b>
+                                ${escapeHtml(
+                                    x.department
+                                )}
+                            </b>
+
+                            <span>
+                                ${x.count}
+                                appointments
+                            </span>
+
+                            <span>
+                                Avg wait
+                                ${x.avg_wait}
+                                min
+                            </span>
+
+                        </div>
+
+                    `
+                )
+                .join("");
+
+
+    }
+
+    catch(error) {
+
+        console.error(
+            "Analytics error:",
+            error
+        );
+
+    }
+
+
+    // Load emergency analytics
+
+    loadEmergencyAnalytics();
+
+    // Load emergency requests
+
+    loadEmergencies();
+
+}
+
+
+// =====================================================
+// LOAD EMERGENCY ANALYTICS
+// =====================================================
+
+async function loadEmergencyAnalytics() {
+
+    try {
+
+        const response =
+            await fetch(
+                `${API}/admin/emergency-analytics`
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Unable to load emergency analytics"
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Emergency analytics:",
+            data
+        );
+
+
+        /*
+         * The backend may return the values directly
+         * or inside an analytics object.
+         */
+
+        const analytics =
+            data.analytics ||
+            data;
+
+
+        document.getElementById(
+            "totalEmergencies"
+        ).textContent =
+            analytics.total ??
+            analytics.total_emergencies ??
+            0;
+
+
+        document.getElementById(
+            "activeEmergencies"
+        ).textContent =
+            analytics.active ??
+            analytics.active_emergencies ??
+            0;
+
+
+        document.getElementById(
+            "resolvedEmergencies"
+        ).textContent =
+            analytics.resolved ??
+            analytics.resolved_emergencies ??
+            0;
+
+
+        const avgResponse =
+            analytics.avg_response ??
+            analytics.average_response ??
+            analytics.avg_response_minutes;
+
+
+        document.getElementById(
+            "avgEmergencyResponse"
+        ).textContent =
+            avgResponse !== undefined &&
+            avgResponse !== null
+                ?
+                avgResponse + " min"
+                :
+                "—";
+
+    }
+
+    catch(error) {
+
+        console.error(
+            "Emergency analytics error:",
+            error
+        );
+
+
+        document.getElementById(
+            "totalEmergencies"
+        ).textContent =
+            "—";
+
+
+        document.getElementById(
+            "activeEmergencies"
+        ).textContent =
+            "—";
+
+
+        document.getElementById(
+            "resolvedEmergencies"
+        ).textContent =
+            "—";
+
+
+        document.getElementById(
+            "avgEmergencyResponse"
+        ).textContent =
+            "—";
+
+    }
+
+}
+
+
+// =====================================================
+// LOAD EMERGENCY REQUESTS
+// =====================================================
+
+async function loadEmergencies() {
+
+    const container =
+        document.getElementById(
+            "emergencyContainer"
+        );
+
+
+    try {
+
+        const response =
+            await fetch(
+                `${API}/admin/emergencies`
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Unable to load emergency requests"
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Emergency requests:",
+            data
+        );
+
+
+        const emergencies =
+            Array.isArray(data)
+                ?
+                data
+                :
+                (
+                    data.emergencies ||
+                    data.requests ||
+                    []
+                );
+
+
+        if (
+            emergencies.length === 0
+        ) {
+
+            container.innerHTML = `
+
+                <p style="
+                    color:#7890a7;
+                ">
+
+                    ✅ No emergency requests.
+
+                </p>
+
+            `;
+
+            return;
+
+        }
+
+
+        container.innerHTML =
+            emergencies
+                .map(
+                    emergency => {
+
+                        const status =
+                            (
+                                emergency.status ||
+                                "requested"
+                            ).toLowerCase();
+
+
+                        let statusText =
+                            "🚨 Requested";
+
+
+                        if (
+                            status ===
+                            "acknowledged"
+                        ) {
+
+                            statusText =
+                                "👀 Acknowledged";
+
+                        }
+
+                        else if (
+                            status ===
+                            "in_progress"
+                        ) {
+
+                            statusText =
+                                "🩺 In Progress";
+
+                        }
+
+                        else if (
+                            status ===
+                            "resolved"
+                        ) {
+
+                            statusText =
+                                "✅ Resolved";
+
+                        }
+
+                        else if (
+                            status ===
+                            "cancelled"
+                        ) {
+
+                            statusText =
+                                "❌ Cancelled";
+
+                        }
+
+
+                        return `
+
+                            <div
+                                class="row"
+                                style="
+                                    display:flex;
+                                    flex-wrap:wrap;
+                                    gap:12px;
+                                    align-items:center;
+                                    padding:18px 0;
+                                    border-bottom:1px solid #e3edf5;
+                                "
+                            >
+
+
+                                <div
+                                    style="
+                                        min-width:180px;
+                                    "
+                                >
+
+                                    <b>
+
+                                        🚨
+                                        ${escapeHtml(
+                                            emergency.token ||
+                                            "--"
+                                        )}
+
+                                    </b>
+
+                                    <br>
+
+                                    <span
+                                        style="
+                                            color:#47637e;
+                                            font-size:13px;
+                                        "
+                                    >
+
+                                        ${escapeHtml(
+                                            emergency.patient_name ||
+                                            "Patient"
+                                        )}
+
+                                    </span>
+
+                                </div>
+
+
+                                <div
+                                    style="
+                                        min-width:150px;
+                                    "
+                                >
+
+                                    <strong>
+                                        Emergency:
+                                    </strong>
+
+                                    <br>
+
+                                    <span>
+                                        ${escapeHtml(
+                                            emergency.emergency_type ||
+                                            "Emergency"
+                                        )}
+                                    </span>
+
+                                </div>
+
+
+                                <div
+                                    style="
+                                        min-width:150px;
+                                    "
+                                >
+
+                                    <strong>
+                                        Department:
+                                    </strong>
+
+                                    <br>
+
+                                    <span>
+                                        ${escapeHtml(
+                                            emergency.department ||
+                                            "—"
+                                        )}
+                                    </span>
+
+                                </div>
+
+
+                                <div
+                                    style="
+                                        min-width:150px;
+                                    "
+                                >
+
+                                    <strong>
+                                        Status:
+                                    </strong>
+
+                                    <br>
+
+                                    <span>
+                                        ${statusText}
+                                    </span>
+
+                                </div>
+
+
+                                <div
+                                    style="
+                                        min-width:200px;
+                                        flex:1;
+                                    "
+                                >
+
+                                    <strong>
+                                        Description:
+                                    </strong>
+
+                                    <br>
+
+                                    <span
+                                        style="
+                                            color:#71859a;
+                                            font-size:13px;
+                                        "
+                                    >
+
+                                        ${escapeHtml(
+                                            emergency.description ||
+                                            "No description"
+                                        )}
+
+                                    </span>
+
+                                </div>
+
+
+                                <div
+                                    style="
+                                        min-width:160px;
+                                    "
+                                >
+
+                                    <strong>
+                                        Location:
+                                    </strong>
+
+                                    <br>
+
+                                    <span
+                                        style="
+                                            color:#71859a;
+                                            font-size:13px;
+                                        "
+                                    >
+
+                                        ${escapeHtml(
+                                            emergency.location ||
+                                            "Not provided"
+                                        )}
+
+                                    </span>
+
+                                </div>
+
+
+                            </div>
+
+                        `;
+
+                    }
+                )
+                .join("");
+
+    }
+
+    catch(error) {
+
+        console.error(
+            "Emergency loading error:",
+            error
+        );
+
+
+        container.innerHTML = `
+
+            <p style="
+                color:#d93636;
+            ">
+
+                Unable to load emergency requests.
+
+            </p>
+
+        `;
+
+    }
+
+}
+
+
+// =====================================================
+// HTML ESCAPE
+// =====================================================
+
+function escapeHtml(
+    value
+) {
+
+    return String(
+        value ?? ""
+    )
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+// =====================================================
+// LOGOUT
+// =====================================================
+
+function logout() {
+
+    localStorage.removeItem(
+        "user"
+    );
+
+    location.href =
+        "login.html";
+
+}
+
+
+// =====================================================
+// INITIAL LOAD
+// =====================================================
+
+load();
+
+
+// Refresh every 5 seconds
+
+setInterval(
+    load,
+    5000
+);
+
+
+</script>
+
+
+</body>
+
+</html>
+```

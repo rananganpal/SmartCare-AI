@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -94,6 +95,36 @@
     </div>
 
 
+    <!-- =================================================
+         EMERGENCY PRIORITY QUEUE
+         ================================================= -->
+
+    <div class="card">
+
+        <h2>🚨 Emergency Priority Queue</h2>
+
+        <p style="
+            color:#71859a;
+            margin:10px 0 20px;
+        ">
+
+            Emergency requests requiring staff/doctor review.
+            Final clinical decisions are made by hospital staff.
+
+        </p>
+
+
+        <div id="emergencyContainer">
+
+            <p>
+                Loading emergency requests...
+            </p>
+
+        </div>
+
+    </div>
+
+
     <button onclick="logout()">
         🚪 Logout
     </button>
@@ -183,6 +214,11 @@ async function loadDashboard() {
         console.error(error);
 
     }
+
+
+    // Load emergency requests
+
+    loadEmergencies();
 
 }
 
@@ -583,26 +619,43 @@ async function cancelPatient(id) {
 
     try {
 
-        await fetch(
-            `${API}/queue/${id}`,
-            {
+        const response =
+            await fetch(
+                `${API}/queue/${id}`,
+                {
 
-                method: "PUT",
+                    method: "PUT",
 
-                headers: {
-                    "Content-Type":
-                        "application/json"
-                },
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
 
-                body: JSON.stringify({
+                    body: JSON.stringify({
 
-                    status:
-                        "cancelled"
+                        status:
+                            "cancelled"
 
-                })
+                    })
 
-            }
-        );
+                }
+            );
+
+
+        if (!response.ok) {
+
+            const data =
+                await response.json();
+
+
+            alert(
+                data.detail ||
+                "Unable to cancel appointment"
+            );
+
+            return;
+
+        }
 
 
         loadDashboard();
@@ -615,6 +668,535 @@ async function cancelPatient(id) {
         );
 
     }
+
+}
+
+
+// =====================================================
+// LOAD EMERGENCIES
+// =====================================================
+
+async function loadEmergencies() {
+
+    const container =
+        document.getElementById(
+            "emergencyContainer"
+        );
+
+
+    try {
+
+        const response =
+            await fetch(
+                `${API}/emergency?department=${encodeURIComponent(user.department)}`
+            );
+
+
+        if (!response.ok) {
+
+            container.innerHTML =
+                "<p>No emergency requests available.</p>";
+
+            return;
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        const emergencies =
+            Array.isArray(data)
+                ? data
+                : (
+                    data.emergencies ||
+                    data.requests ||
+                    []
+                );
+
+
+        /*
+         * Only show active emergency requests.
+         */
+
+        const activeEmergencies =
+            emergencies.filter(
+                emergency => {
+
+                    const status =
+                        (
+                            emergency.status ||
+                            "requested"
+                        ).toLowerCase();
+
+                    return (
+                        status !== "resolved" &&
+                        status !== "cancelled"
+                    );
+
+                }
+            );
+
+
+        if (
+            activeEmergencies.length === 0
+        ) {
+
+            container.innerHTML = `
+
+                <p style="
+                    color:#7890a7;
+                ">
+
+                    ✅ No active emergency requests.
+
+                </p>
+
+            `;
+
+            return;
+
+        }
+
+
+        container.innerHTML =
+            activeEmergencies
+                .map(
+                    emergency => {
+
+                        const status =
+                            (
+                                emergency.status ||
+                                "requested"
+                            ).toLowerCase();
+
+
+                        let statusText =
+                            "🚨 Requested";
+
+
+                        if (
+                            status ===
+                            "acknowledged"
+                        ) {
+
+                            statusText =
+                                "👀 Acknowledged";
+
+                        }
+
+                        else if (
+                            status ===
+                            "in_progress"
+                        ) {
+
+                            statusText =
+                                "🩺 In Progress";
+
+                        }
+
+
+                        let buttons = "";
+
+
+                        /*
+                         * Requested
+                         */
+
+                        if (
+                            status ===
+                            "requested"
+                        ) {
+
+                            buttons = `
+
+                                <button
+                                    onclick="
+                                        updateEmergency(
+                                            ${emergency.id},
+                                            'acknowledged'
+                                        )
+                                    ">
+
+                                    👀 Acknowledge
+
+                                </button>
+
+                                <button
+                                    onclick="
+                                        updateEmergency(
+                                            ${emergency.id},
+                                            'in_progress'
+                                        )
+                                    ">
+
+                                    🩺 Start
+
+                                </button>
+
+                            `;
+
+                        }
+
+
+                        /*
+                         * Acknowledged
+                         */
+
+                        else if (
+                            status ===
+                            "acknowledged"
+                        ) {
+
+                            buttons = `
+
+                                <button
+                                    onclick="
+                                        updateEmergency(
+                                            ${emergency.id},
+                                            'in_progress'
+                                        )
+                                    ">
+
+                                    🩺 Start Emergency
+
+                                </button>
+
+                            `;
+
+                        }
+
+
+                        /*
+                         * In progress
+                         */
+
+                        else if (
+                            status ===
+                            "in_progress"
+                        ) {
+
+                            buttons = `
+
+                                <button
+                                    onclick="
+                                        updateEmergency(
+                                            ${emergency.id},
+                                            'resolved'
+                                        )
+                                    ">
+
+                                    ✅ Resolve
+
+                                </button>
+
+                            `;
+
+                        }
+
+
+                        return `
+
+                            <div
+                                class="card"
+                                style="
+                                    margin-bottom:15px;
+                                    border-left:5px solid #c0392b;
+                                "
+                            >
+
+                                <h3>
+
+                                    🚨
+                                    ${escapeHtml(
+                                        emergency.token ||
+                                        "--"
+                                    )}
+
+                                    -
+                                    ${escapeHtml(
+                                        emergency.patient_name ||
+                                        "Patient"
+                                    )}
+
+                                </h3>
+
+
+                                <p>
+
+                                    <strong>
+                                        Emergency:
+                                    </strong>
+
+                                    ${escapeHtml(
+                                        emergency.emergency_type ||
+                                        "Emergency"
+                                    )}
+
+                                </p>
+
+
+                                <p>
+
+                                    <strong>
+                                        Department:
+                                    </strong>
+
+                                    ${escapeHtml(
+                                        emergency.department ||
+                                        user.department
+                                    )}
+
+                                </p>
+
+
+                                <p>
+
+                                    <strong>
+                                        Description:
+                                    </strong>
+
+                                    ${escapeHtml(
+                                        emergency.description ||
+                                        "No description provided"
+                                    )}
+
+                                </p>
+
+
+                                <p>
+
+                                    <strong>
+                                        Location:
+                                    </strong>
+
+                                    ${escapeHtml(
+                                        emergency.location ||
+                                        "Not provided"
+                                    )}
+
+                                </p>
+
+
+                                <p>
+
+                                    <strong>
+                                        Emergency Contact:
+                                    </strong>
+
+                                    ${escapeHtml(
+                                        emergency.emergency_contact ||
+                                        "Not provided"
+                                    )}
+
+                                </p>
+
+
+                                <p>
+
+                                    <strong>
+                                        Status:
+                                    </strong>
+
+                                    ${statusText}
+
+                                </p>
+
+
+                                <div style="
+                                    margin-top:12px;
+                                ">
+
+                                    ${buttons}
+
+                                </div>
+
+                            </div>
+
+                        `;
+
+                    }
+                )
+                .join("");
+
+    }
+
+    catch(error) {
+
+        console.error(
+            "Emergency error:",
+            error
+        );
+
+
+        container.innerHTML = `
+
+            <p style="
+                color:#d93636;
+            ">
+
+                Unable to load emergency requests.
+
+            </p>
+
+        `;
+
+    }
+
+}
+
+
+// =====================================================
+// UPDATE EMERGENCY
+// =====================================================
+
+async function updateEmergency(
+    id,
+    status
+) {
+
+    let message =
+        "Update this emergency request?";
+
+
+    if (
+        status ===
+        "acknowledged"
+    ) {
+
+        message =
+            "Acknowledge this emergency request?";
+
+    }
+
+    else if (
+        status ===
+        "in_progress"
+    ) {
+
+        message =
+            "Start handling this emergency request?";
+
+    }
+
+    else if (
+        status ===
+        "resolved"
+    ) {
+
+        message =
+            "Mark this emergency request as resolved?";
+
+    }
+
+
+    const confirmed =
+        confirm(message);
+
+
+    if (!confirmed) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                `${API}/emergency/${id}`,
+                {
+
+                    method: "PUT",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            status:
+                                status
+
+                        })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            alert(
+                data.detail ||
+                "Unable to update emergency request."
+            );
+
+            return;
+
+        }
+
+
+        loadEmergencies();
+
+    }
+
+    catch(error) {
+
+        console.error(
+            error
+        );
+
+
+        alert(
+            "Server error while updating emergency."
+        );
+
+    }
+
+}
+
+
+// =====================================================
+// HTML ESCAPE
+// =====================================================
+
+function escapeHtml(
+    value
+) {
+
+    return String(
+        value ?? ""
+    )
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 
 }
 
@@ -654,3 +1236,4 @@ setInterval(
 </body>
 
 </html>
+```

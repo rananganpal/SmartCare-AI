@@ -376,6 +376,159 @@ def init_db():
     )
 
 
+    # =====================================================
+    # 🚨 EMERGENCY REQUESTS
+    # =====================================================
+
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS emergency_requests (
+
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            patient_id INTEGER NOT NULL,
+
+            patient_name TEXT NOT NULL,
+
+            emergency_type TEXT NOT NULL,
+
+            description TEXT,
+
+            location TEXT,
+
+            emergency_contact TEXT,
+
+            department TEXT,
+
+            doctor TEXT,
+
+            status TEXT DEFAULT 'requested',
+
+            token TEXT UNIQUE,
+
+            created_at TEXT NOT NULL,
+
+            acknowledged_at TEXT,
+
+            actual_start_time TEXT,
+
+            resolved_at TEXT,
+
+            response_minutes INTEGER
+
+        )
+    """)
+
+
+    # -----------------------------------------------------
+    # 🚨 EMERGENCY TABLE MIGRATION
+    # -----------------------------------------------------
+
+    add_column_if_missing(
+        conn,
+        "emergency_requests",
+        "patient_id",
+        "INTEGER"
+    )
+
+    add_column_if_missing(
+        conn,
+        "emergency_requests",
+        "patient_name",
+        "TEXT"
+    )
+
+    add_column_if_missing(
+        conn,
+        "emergency_requests",
+        "emergency_type",
+        "TEXT"
+    )
+
+    add_column_if_missing(
+        conn,
+        "emergency_requests",
+        "description",
+        "TEXT"
+    )
+
+    add_column_if_missing(
+        conn,
+        "emergency_requests",
+        "location",
+        "TEXT"
+    )
+
+    add_column_if_missing(
+        conn,
+        "emergency_requests",
+        "emergency_contact",
+        "TEXT"
+    )
+
+    add_column_if_missing(
+        conn,
+        "emergency_requests",
+        "department",
+        "TEXT"
+    )
+
+    add_column_if_missing(
+        conn,
+        "emergency_requests",
+        "doctor",
+        "TEXT"
+    )
+
+    add_column_if_missing(
+        conn,
+        "emergency_requests",
+        "status",
+        "TEXT DEFAULT 'requested'"
+    )
+
+    add_column_if_missing(
+        conn,
+        "emergency_requests",
+        "token",
+        "TEXT"
+    )
+
+    add_column_if_missing(
+        conn,
+        "emergency_requests",
+        "created_at",
+        "TEXT"
+    )
+
+    add_column_if_missing(
+        conn,
+        "emergency_requests",
+        "acknowledged_at",
+        "TEXT"
+    )
+
+    add_column_if_missing(
+        conn,
+        "emergency_requests",
+        "actual_start_time",
+        "TEXT"
+    )
+
+    add_column_if_missing(
+        conn,
+        "emergency_requests",
+        "resolved_at",
+        "TEXT"
+    )
+
+    add_column_if_missing(
+        conn,
+        "emergency_requests",
+        "response_minutes",
+        "INTEGER"
+    )
+
+
     # -----------------------------------------------------
     # DEMO ACCOUNTS
     # -----------------------------------------------------
@@ -489,6 +642,30 @@ class QueueUpdateRequest(BaseModel):
     status: str
 
     consultation_minutes: int | None = None
+
+
+# =========================================================
+# 🚨 EMERGENCY MODELS
+# =========================================================
+
+class EmergencyRequest(BaseModel):
+
+    patient_id: int
+
+    emergency_type: str
+
+    description: str = ""
+
+    location: str = ""
+
+    emergency_contact: str = ""
+
+    department: str
+
+
+class EmergencyStatusRequest(BaseModel):
+
+    status: str
 
 
 # =========================================================
@@ -1100,9 +1277,6 @@ def create_appointment(
     # TOKEN NUMBER
     # -----------------------------------------------------
 
-    # Find the largest existing token number.
-    # This prevents duplicate tokens after cancellation.
-
     max_token_number = 0
 
 
@@ -1348,10 +1522,6 @@ def calculate_queue_times(
     )
 
 
-    # -----------------------------------------------------
-    # previous_end = when previous patient finishes
-    # -----------------------------------------------------
-
     previous_end = session_start
 
 
@@ -1362,25 +1532,11 @@ def calculate_queue_times(
         status = appointment["status"]
 
 
-        # -------------------------------------------------
-        # ORIGINAL PLANNED TIME
-        # -------------------------------------------------
-
-        planned_datetime = parse_planned_time(
-            appointment_date,
-            appointment["planned_time"]
-        )
-
-
         # =================================================
         # COMPLETED
         # =================================================
 
         if status == "completed":
-
-            # ---------------------------------------------
-            # Actual start
-            # ---------------------------------------------
 
             if appointment["actual_start_time"]:
 
@@ -1399,10 +1555,6 @@ def calculate_queue_times(
                 )
 
 
-            # ---------------------------------------------
-            # Actual consultation duration
-            # ---------------------------------------------
-
             consultation = (
                 appointment[
                     "consultation_minutes"
@@ -1420,10 +1572,6 @@ def calculate_queue_times(
                 )
 
 
-            # ---------------------------------------------
-            # ACTUAL END
-            # ---------------------------------------------
-
             actual_end = (
                 actual_start
                 +
@@ -1432,10 +1580,6 @@ def calculate_queue_times(
                 )
             )
 
-
-            # ---------------------------------------------
-            # DELAY
-            # ---------------------------------------------
 
             delay = max(
                 0,
@@ -1449,10 +1593,6 @@ def calculate_queue_times(
                 )
             )
 
-
-            # ---------------------------------------------
-            # SAVE
-            # ---------------------------------------------
 
             conn.execute(
                 """
@@ -1483,10 +1623,6 @@ def calculate_queue_times(
             )
 
 
-            # ---------------------------------------------
-            # NEXT PATIENT STARTS AFTER THIS END TIME
-            # ---------------------------------------------
-
             previous_end = actual_end
 
 
@@ -1495,10 +1631,6 @@ def calculate_queue_times(
         # =================================================
 
         elif status == "in_progress":
-
-            # ---------------------------------------------
-            # Actual start
-            # ---------------------------------------------
 
             if appointment["actual_start_time"]:
 
@@ -1535,11 +1667,6 @@ def calculate_queue_times(
                 )
 
 
-            # ---------------------------------------------
-            # While consultation is running,
-            # assume 10 minutes until doctor completes it.
-            # ---------------------------------------------
-
             consultation = (
                 appointment[
                     "consultation_minutes"
@@ -1572,22 +1699,17 @@ def calculate_queue_times(
 
         elif status == "waiting":
 
-            # ---------------------------------------------
-            # Patient starts at the later of:
-            #
-            # 1. Original planned time
-            # 2. Previous patient actual finish time
-            # ---------------------------------------------
+            planned_datetime = parse_planned_time(
+                appointment_date,
+                appointment["planned_time"]
+            )
+
 
             expected_start = max(
                 planned_datetime,
                 previous_end
             )
 
-
-            # ---------------------------------------------
-            # Calculate delay
-            # ---------------------------------------------
 
             delay = max(
                 0,
@@ -1601,10 +1723,6 @@ def calculate_queue_times(
                 )
             )
 
-
-            # ---------------------------------------------
-            # Save delay
-            # ---------------------------------------------
 
             conn.execute(
                 """
@@ -1620,10 +1738,6 @@ def calculate_queue_times(
                 )
             )
 
-
-            # ---------------------------------------------
-            # Normal patient = 10 minutes
-            # ---------------------------------------------
 
             previous_end = (
                 expected_start
@@ -1731,9 +1845,7 @@ def get_calculated_queue(
             actual_end = (
                 actual_start
                 +
-                timedelta(
-                    minutes=consultation
-                )
+                timedelta(minutes=consultation)
             )
 
 
@@ -1780,9 +1892,7 @@ def get_calculated_queue(
             previous_end = (
                 actual_start
                 +
-                timedelta(
-                    minutes=consultation
-                )
+                timedelta(minutes=consultation)
             )
 
 
@@ -1806,10 +1916,6 @@ def get_calculated_queue(
                 )
             )
 
-
-        # -------------------------------------------------
-        # CALCULATED INFORMATION
-        # -------------------------------------------------
 
         delay = max(
             0,
@@ -1854,9 +1960,6 @@ def get_calculated_queue(
             patients_ahead
         )
 
-
-        # Estimated wait from now
-        # is mainly useful for waiting patients.
 
         item["estimated_wait_minutes"] = (
 
@@ -1948,8 +2051,6 @@ def patient_dashboard(
         )
 
 
-        # Calculate queue information
-
         queue_data = get_calculated_queue(
             current_appointment[
                 "department"
@@ -1966,10 +2067,6 @@ def patient_dashboard(
 
                 break
 
-
-    # -----------------------------------------------------
-    # RESPONSE
-    # -----------------------------------------------------
 
     return {
 
@@ -2003,8 +2100,6 @@ def queue(
 
     conn = get_db()
 
-
-    # If date isn't provided, use today
 
     if not appointment_date:
 
@@ -2053,11 +2148,6 @@ def queue(
     conn.close()
 
 
-    # -----------------------------------------------------
-    # If department provided,
-    # return calculated queue.
-    # -----------------------------------------------------
-
     if department:
 
         return get_calculated_queue(
@@ -2065,10 +2155,6 @@ def queue(
             appointment_date
         )
 
-
-    # -----------------------------------------------------
-    # Otherwise return normal records
-    # -----------------------------------------------------
 
     return [
         dict(row)
@@ -2092,10 +2178,6 @@ def doctor_dashboard(
 
     conn = get_db()
 
-
-    # -----------------------------------------------------
-    # TODAY'S APPOINTMENTS ONLY
-    # -----------------------------------------------------
 
     if department:
 
@@ -2131,10 +2213,6 @@ def doctor_dashboard(
     conn.close()
 
 
-    # -----------------------------------------------------
-    # CALCULATED QUEUE
-    # -----------------------------------------------------
-
     if department:
 
         appointments = get_calculated_queue(
@@ -2149,10 +2227,6 @@ def doctor_dashboard(
             for row in rows
         ]
 
-
-    # -----------------------------------------------------
-    # COUNTS
-    # -----------------------------------------------------
 
     waiting = 0
 
@@ -2256,8 +2330,6 @@ def update_queue(
 
     if data.status == "in_progress":
 
-        # Check if another patient is already in progress
-
         active = conn.execute(
             """
             SELECT id
@@ -2285,8 +2357,6 @@ def update_queue(
                 "Another patient is currently in progress."
             )
 
-
-        # Actual start = now
 
         now = datetime.now()
 
@@ -2334,8 +2404,6 @@ def update_queue(
             )
 
 
-        # Get actual start
-
         actual_start_value = (
             appointment[
                 "actual_start_time"
@@ -2355,18 +2423,12 @@ def update_queue(
             actual_start = datetime.now()
 
 
-        # Actual end
-
         actual_end = (
             actual_start
             +
-            timedelta(
-                minutes=consultation
-            )
+            timedelta(minutes=consultation)
         )
 
-
-        # Planned time
 
         planned_datetime = parse_planned_time(
             appointment[
@@ -2377,8 +2439,6 @@ def update_queue(
             ]
         )
 
-
-        # Delay
 
         delay = max(
             0,
@@ -2392,8 +2452,6 @@ def update_queue(
             )
         )
 
-
-        # Save completed data
 
         conn.execute(
             """
@@ -2499,10 +2557,6 @@ def update_queue(
 
     conn.close()
 
-
-    # -----------------------------------------------------
-    # RECALCULATE QUEUE
-    # -----------------------------------------------------
 
     calculate_queue_times(
         department,
@@ -2739,6 +2793,19 @@ def delete_patient(
 
 
         # -------------------------------------------------
+        # 🚨 DELETE EMERGENCY REQUESTS
+        # -------------------------------------------------
+
+        conn.execute(
+            """
+            DELETE FROM emergency_requests
+            WHERE patient_id = ?
+            """,
+            (patient_id,)
+        )
+
+
+        # -------------------------------------------------
         # DELETE PATIENT ACCOUNT
         # -------------------------------------------------
 
@@ -2793,6 +2860,987 @@ def delete_patient(
     finally:
 
         conn.close()
+
+
+# =========================================================
+# 🚨 EMERGENCY SUPPORT
+# =========================================================
+#
+# IMPORTANT:
+# This feature is workflow support only.
+# It does NOT diagnose patients and does NOT autonomously
+# decide medical priority.
+#
+# Hospital staff / doctors make the final clinical decision.
+# For life-threatening emergencies, contact local emergency
+# services immediately.
+# =========================================================
+
+
+EMERGENCY_TYPES = [
+
+    "Breathing difficulty",
+
+    "Chest pain",
+
+    "Severe bleeding",
+
+    "Accident / injury",
+
+    "Loss of consciousness",
+
+    "Severe pain",
+
+    "Other emergency"
+
+]
+
+
+EMERGENCY_STATUSES = [
+
+    "requested",
+
+    "acknowledged",
+
+    "in_progress",
+
+    "resolved",
+
+    "cancelled"
+
+]
+
+
+# =========================================================
+# EMERGENCY TOKEN
+# =========================================================
+
+def generate_emergency_token(
+    conn
+):
+
+    today = datetime.now().strftime(
+        "%Y%m%d"
+    )
+
+
+    prefix = f"ER-{today}-"
+
+
+    rows = conn.execute(
+        """
+        SELECT token
+        FROM emergency_requests
+        WHERE token LIKE ?
+        ORDER BY id DESC
+        """,
+        (
+            f"{prefix}%"
+        )
+    ).fetchall()
+
+
+    max_number = 0
+
+
+    for row in rows:
+
+        token = row["token"]
+
+
+        if not token:
+
+            continue
+
+
+        try:
+
+            number = int(
+                token.split("-")[-1]
+            )
+
+            max_number = max(
+                max_number,
+                number
+            )
+
+        except ValueError:
+
+            pass
+
+
+    return (
+        f"{prefix}"
+        f"{max_number + 1:03d}"
+    )
+
+
+# =========================================================
+# CREATE EMERGENCY REQUEST
+# =========================================================
+
+@app.post("/emergency")
+def create_emergency(
+    data: EmergencyRequest
+):
+
+    # -----------------------------------------------------
+    # CHECK EMERGENCY TYPE
+    # -----------------------------------------------------
+
+    if data.emergency_type not in EMERGENCY_TYPES:
+
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid emergency type."
+        )
+
+
+    # -----------------------------------------------------
+    # CHECK DEPARTMENT
+    # -----------------------------------------------------
+
+    if data.department not in DEPARTMENT_SCHEDULE:
+
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid department."
+        )
+
+
+    conn = get_db()
+
+
+    try:
+
+        # -------------------------------------------------
+        # CHECK PATIENT
+        # -------------------------------------------------
+
+        patient = conn.execute(
+            """
+            SELECT *
+            FROM users
+            WHERE id = ?
+            AND role = 'patient'
+            """,
+            (data.patient_id,)
+        ).fetchone()
+
+
+        if not patient:
+
+            raise HTTPException(
+                status_code=404,
+                detail="Patient account not found."
+            )
+
+
+        # -------------------------------------------------
+        # ONE ACTIVE EMERGENCY PER PATIENT
+        # -------------------------------------------------
+
+        active_emergency = conn.execute(
+            """
+            SELECT *
+            FROM emergency_requests
+            WHERE patient_id = ?
+            AND status IN (
+                'requested',
+                'acknowledged',
+                'in_progress'
+            )
+            ORDER BY id DESC
+            LIMIT 1
+            """,
+            (data.patient_id,)
+        ).fetchone()
+
+
+        if active_emergency:
+
+            raise HTTPException(
+                status_code=400,
+                detail=
+                "You already have an active emergency request."
+            )
+
+
+        # -------------------------------------------------
+        # DOCTOR
+        # -------------------------------------------------
+
+        doctor = DEPARTMENT_SCHEDULE[
+            data.department
+        ]["doctor"]
+
+
+        # -------------------------------------------------
+        # CREATED TIME
+        # -------------------------------------------------
+
+        now = datetime.now()
+
+
+        # -------------------------------------------------
+        # EMERGENCY TOKEN
+        # -------------------------------------------------
+
+        token = generate_emergency_token(
+            conn
+        )
+
+
+        # -------------------------------------------------
+        # SAVE EMERGENCY
+        # -------------------------------------------------
+
+        cursor = conn.execute(
+            """
+            INSERT INTO emergency_requests
+            (
+                patient_id,
+                patient_name,
+                emergency_type,
+                description,
+                location,
+                emergency_contact,
+                department,
+                doctor,
+                status,
+                token,
+                created_at
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                data.patient_id,
+
+                patient["name"],
+
+                data.emergency_type,
+
+                data.description,
+
+                data.location,
+
+                data.emergency_contact,
+
+                data.department,
+
+                doctor,
+
+                "requested",
+
+                token,
+
+                format_datetime(now)
+            )
+        )
+
+
+        conn.commit()
+
+
+        emergency_id = cursor.lastrowid
+
+
+        return {
+
+            "message":
+                "Emergency request submitted successfully.",
+
+            "emergency": {
+
+                "id":
+                    emergency_id,
+
+                "patient_id":
+                    data.patient_id,
+
+                "patient_name":
+                    patient["name"],
+
+                "emergency_type":
+                    data.emergency_type,
+
+                "description":
+                    data.description,
+
+                "location":
+                    data.location,
+
+                "emergency_contact":
+                    data.emergency_contact,
+
+                "department":
+                    data.department,
+
+                "doctor":
+                    doctor,
+
+                "status":
+                    "requested",
+
+                "token":
+                    token,
+
+                "created_at":
+                    format_datetime(now)
+
+            }
+
+        }
+
+
+    except HTTPException:
+
+        conn.rollback()
+
+        raise
+
+
+    except sqlite3.IntegrityError:
+
+        conn.rollback()
+
+        raise HTTPException(
+            status_code=500,
+            detail=
+            "Unable to create emergency request."
+        )
+
+
+    except Exception as error:
+
+        conn.rollback()
+
+        raise HTTPException(
+            status_code=500,
+            detail=
+            f"Unable to create emergency request: {str(error)}"
+        )
+
+
+    finally:
+
+        conn.close()
+
+
+# =========================================================
+# GET PATIENT EMERGENCY REQUESTS
+# =========================================================
+
+@app.get("/emergency/patient/{patient_id}")
+def patient_emergencies(
+    patient_id: int
+):
+
+    conn = get_db()
+
+
+    # -----------------------------------------------------
+    # CHECK PATIENT
+    # -----------------------------------------------------
+
+    patient = conn.execute(
+        """
+        SELECT id
+        FROM users
+        WHERE id = ?
+        AND role = 'patient'
+        """,
+        (patient_id,)
+    ).fetchone()
+
+
+    if not patient:
+
+        conn.close()
+
+        raise HTTPException(
+            status_code=404,
+            detail="Patient account not found."
+        )
+
+
+    emergencies = conn.execute(
+        """
+        SELECT *
+        FROM emergency_requests
+        WHERE patient_id = ?
+        ORDER BY id DESC
+        """,
+        (patient_id,)
+    ).fetchall()
+
+
+    conn.close()
+
+
+    return [
+        dict(row)
+        for row in emergencies
+    ]
+
+
+# =========================================================
+# GET EMERGENCY QUEUE
+# =========================================================
+#
+# Used by doctor/staff dashboard.
+#
+# Optional department filter:
+#
+# /emergency?department=Cardiology
+#
+# Without department:
+#
+# /emergency
+#
+# returns today's emergency requests.
+# =========================================================
+
+@app.get("/emergency")
+def emergency_queue(
+    department: str | None = None
+):
+
+    today = datetime.now().strftime(
+        "%Y-%m-%d"
+    )
+
+
+    conn = get_db()
+
+
+    if department:
+
+        if department not in DEPARTMENT_SCHEDULE:
+
+            conn.close()
+
+            raise HTTPException(
+                status_code=400,
+                detail="Invalid department."
+            )
+
+
+        emergencies = conn.execute(
+            """
+            SELECT *
+            FROM emergency_requests
+            WHERE department = ?
+            AND date(created_at) = ?
+            ORDER BY
+                CASE status
+                    WHEN 'requested' THEN 1
+                    WHEN 'acknowledged' THEN 2
+                    WHEN 'in_progress' THEN 3
+                    WHEN 'resolved' THEN 4
+                    WHEN 'cancelled' THEN 5
+                    ELSE 6
+                END,
+                id ASC
+            """,
+            (
+                department,
+                today
+            )
+        ).fetchall()
+
+    else:
+
+        emergencies = conn.execute(
+            """
+            SELECT *
+            FROM emergency_requests
+            WHERE date(created_at) = ?
+            ORDER BY
+                CASE status
+                    WHEN 'requested' THEN 1
+                    WHEN 'acknowledged' THEN 2
+                    WHEN 'in_progress' THEN 3
+                    WHEN 'resolved' THEN 4
+                    WHEN 'cancelled' THEN 5
+                    ELSE 6
+                END,
+                id ASC
+            """,
+            (today,)
+        ).fetchall()
+
+
+    conn.close()
+
+
+    return [
+        dict(row)
+        for row in emergencies
+    ]
+
+
+# =========================================================
+# UPDATE EMERGENCY STATUS
+# =========================================================
+
+@app.put("/emergency/{emergency_id}")
+def update_emergency(
+    emergency_id: int,
+    data: EmergencyStatusRequest
+):
+
+    if data.status not in EMERGENCY_STATUSES:
+
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid emergency status."
+        )
+
+
+    conn = get_db()
+
+
+    try:
+
+        emergency = conn.execute(
+            """
+            SELECT *
+            FROM emergency_requests
+            WHERE id = ?
+            """,
+            (emergency_id,)
+        ).fetchone()
+
+
+        if not emergency:
+
+            raise HTTPException(
+                status_code=404,
+                detail="Emergency request not found."
+            )
+
+
+        now = datetime.now()
+
+
+        # =================================================
+        # REQUESTED
+        # =================================================
+
+        if data.status == "requested":
+
+            conn.execute(
+                """
+                UPDATE emergency_requests
+
+                SET status = ?
+
+                WHERE id = ?
+                """,
+                (
+                    "requested",
+
+                    emergency_id
+                )
+            )
+
+
+        # =================================================
+        # ACKNOWLEDGED
+        # =================================================
+
+        elif data.status == "acknowledged":
+
+            acknowledged_at = (
+                emergency["acknowledged_at"]
+            )
+
+
+            if not acknowledged_at:
+
+                acknowledged_at = (
+                    format_datetime(now)
+                )
+
+
+            conn.execute(
+                """
+                UPDATE emergency_requests
+
+                SET status = ?,
+                    acknowledged_at = ?
+
+                WHERE id = ?
+                """,
+                (
+                    "acknowledged",
+
+                    acknowledged_at,
+
+                    emergency_id
+                )
+            )
+
+
+        # =================================================
+        # IN PROGRESS
+        # =================================================
+
+        elif data.status == "in_progress":
+
+            actual_start_time = (
+                emergency[
+                    "actual_start_time"
+                ]
+            )
+
+
+            if not actual_start_time:
+
+                actual_start_time = (
+                    format_datetime(now)
+                )
+
+
+            acknowledged_at = (
+                emergency["acknowledged_at"]
+            )
+
+
+            if not acknowledged_at:
+
+                acknowledged_at = (
+                    format_datetime(now)
+                )
+
+
+            conn.execute(
+                """
+                UPDATE emergency_requests
+
+                SET status = ?,
+
+                    acknowledged_at = ?,
+
+                    actual_start_time = ?
+
+                WHERE id = ?
+                """,
+                (
+                    "in_progress",
+
+                    acknowledged_at,
+
+                    actual_start_time,
+
+                    emergency_id
+                )
+            )
+
+
+        # =================================================
+        # RESOLVED
+        # =================================================
+
+        elif data.status == "resolved":
+
+            resolved_at = (
+                format_datetime(now)
+            )
+
+
+            response_minutes = (
+                emergency["response_minutes"]
+            )
+
+
+            # -------------------------------------------------
+            # Response time = acknowledged/start/resolution
+            # from original emergency request.
+            # -------------------------------------------------
+
+            start_reference = (
+                emergency["actual_start_time"]
+                or
+                emergency["acknowledged_at"]
+                or
+                emergency["created_at"]
+            )
+
+
+            if start_reference:
+
+                try:
+
+                    start_time = datetime.strptime(
+                        start_reference,
+                        "%Y-%m-%d %H:%M:%S"
+                    )
+
+
+                    response_minutes = max(
+                        0,
+                        int(
+                            (
+                                now
+                                -
+                                start_time
+                            ).total_seconds()
+                            / 60
+                        )
+                    )
+
+                except ValueError:
+
+                    pass
+
+
+            conn.execute(
+                """
+                UPDATE emergency_requests
+
+                SET status = ?,
+
+                    resolved_at = ?,
+
+                    response_minutes = ?
+
+                WHERE id = ?
+                """,
+                (
+                    "resolved",
+
+                    resolved_at,
+
+                    response_minutes,
+
+                    emergency_id
+                )
+            )
+
+
+        # =================================================
+        # CANCELLED
+        # =================================================
+
+        elif data.status == "cancelled":
+
+            conn.execute(
+                """
+                UPDATE emergency_requests
+
+                SET status = ?
+
+                WHERE id = ?
+                """,
+                (
+                    "cancelled",
+
+                    emergency_id
+                )
+            )
+
+
+        conn.commit()
+
+
+        updated = conn.execute(
+            """
+            SELECT *
+            FROM emergency_requests
+            WHERE id = ?
+            """,
+            (emergency_id,)
+        ).fetchone()
+
+
+        return {
+
+            "message":
+                "Emergency status updated successfully.",
+
+            "emergency":
+                dict(updated)
+
+        }
+
+
+    except HTTPException:
+
+        conn.rollback()
+
+        raise
+
+
+    except Exception as error:
+
+        conn.rollback()
+
+        raise HTTPException(
+            status_code=500,
+            detail=
+            f"Unable to update emergency: {str(error)}"
+        )
+
+
+    finally:
+
+        conn.close()
+
+
+# =========================================================
+# ADMIN EMERGENCY MANAGEMENT
+# =========================================================
+
+@app.get("/admin/emergencies")
+def admin_emergencies():
+
+    conn = get_db()
+
+
+    emergencies = conn.execute(
+        """
+        SELECT *
+        FROM emergency_requests
+        ORDER BY id DESC
+        """
+    ).fetchall()
+
+
+    conn.close()
+
+
+    return [
+        dict(row)
+        for row in emergencies
+    ]
+
+
+# =========================================================
+# ADMIN EMERGENCY ANALYTICS
+# =========================================================
+
+@app.get("/admin/emergency-analytics")
+def admin_emergency_analytics():
+
+    conn = get_db()
+
+
+    total = conn.execute(
+        """
+        SELECT COUNT(*)
+        FROM emergency_requests
+        """
+    ).fetchone()[0]
+
+
+    active = conn.execute(
+        """
+        SELECT COUNT(*)
+        FROM emergency_requests
+        WHERE status IN (
+            'requested',
+            'acknowledged',
+            'in_progress'
+        )
+        """
+    ).fetchone()[0]
+
+
+    resolved = conn.execute(
+        """
+        SELECT COUNT(*)
+        FROM emergency_requests
+        WHERE status = 'resolved'
+        """
+    ).fetchone()[0]
+
+
+    cancelled = conn.execute(
+        """
+        SELECT COUNT(*)
+        FROM emergency_requests
+        WHERE status = 'cancelled'
+        """
+    ).fetchone()[0]
+
+
+    average_response = conn.execute(
+        """
+        SELECT AVG(response_minutes)
+        FROM emergency_requests
+        WHERE response_minutes IS NOT NULL
+        """
+    ).fetchone()[0]
+
+
+    departments = conn.execute(
+        """
+        SELECT
+            department,
+            COUNT(*) AS total
+        FROM emergency_requests
+        GROUP BY department
+        ORDER BY total DESC
+        """
+    ).fetchall()
+
+
+    emergency_types = conn.execute(
+        """
+        SELECT
+            emergency_type,
+            COUNT(*) AS total
+        FROM emergency_requests
+        GROUP BY emergency_type
+        ORDER BY total DESC
+        """
+    ).fetchall()
+
+
+    conn.close()
+
+
+    return {
+
+        "total_emergencies":
+            total,
+
+        "active":
+            active,
+
+        "resolved":
+            resolved,
+
+        "cancelled":
+            cancelled,
+
+        "average_response_minutes":
+            round(
+                average_response,
+                2
+            )
+            if average_response is not None
+            else 0,
+
+        "departments": [
+
+            dict(row)
+
+            for row in departments
+
+        ],
+
+        "emergency_types": [
+
+            dict(row)
+
+            for row in emergency_types
+
+        ]
+
+    }
 
 
 # =========================================================
